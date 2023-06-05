@@ -1,23 +1,22 @@
 ![Gopher](https://github.com/zakirullin/stuff-bot/raw/main/cmd/testdata/_img_/gopherv8.png)
 
-### Spin it up
-1) Create new telegram bot via [@BotFather](https://t.me/BotFather)
+
+## Spin it up
+1) Register new telegram bot via [@BotFather](https://t.me/BotFather)
 2) Copy your bot token to `.env` file (see `.env.example`)
 
 ```bash
-make install && make run
+$ make install && make run
 ```
-
 or
-
 ```bash
-go get ./..
-go run ./cmd
+$ go get ./..
+$ go run ./cmd
 ```
 
 Locally bot's artficats can be seen in `cmd/testdata`
 
-### Overarching design principles
+## Overarching design principles
 - `Clarity`: The code’s purpose and rationale is clear to the reader.
 - `Simplicity`: The code accomplishes its goal in the simplest way possible.
 - `Concision`: The code is easy to discern the relevant details, and the naming and structure guide the reader through these details.  
@@ -26,7 +25,7 @@ Locally bot's artficats can be seen in `cmd/testdata`
 
 Refer to [developer's handbook](https://github.com/zakirullin/cognitive-load) for more comprehensive guiding rules.
 
-### Guidelines
+## Guidelines
 - With portability in mind, everything is stored in **plain text files**
 - We write **tests**
 - We don't use get* prefix for methods
@@ -37,7 +36,7 @@ Refer to [developer's handbook](https://github.com/zakirullin/cognitive-load) fo
 - Imports should only be renamed to avoid a name collision with other imports
 - [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
 
-### Glossary
+## Glossary
 - `filename` - a filename with extension, like "note.md" (USE THIS AS ID)
 - `title` - an extension-stripped and capitalized filename, like "Note"
 - `content` - note's content (body/text)
@@ -45,16 +44,16 @@ Refer to [developer's handbook](https://github.com/zakirullin/cognitive-load) fo
 - `userID` - chatID. For the most part we're only using chatID as userID (PM with the bot)
 - `ctime` - file's ownership, location, file type and permission settings changed time (parent folder rename won't affect). We need this to track file's location changes, like to understand when it was moved to _trash_
 
-### ADRs (Architecture Decision Records)
+## ADRs (Architecture Decision Records)
 - everywhere where we have user input - we should use fs.hash, otherwise we get long filenames, and tg returns `INVALID_DATA` error (callbackData max 64 bytes)
 - introduced `db.go`. We had to abstract away Redis anyway (otherwise it's hard to write tests)
 - db.go doesn't store userID (we often use it separately...) Do we?
 - we can't ucfist filename in fs.Put - what if that was user-created file (outside the bot), i.e. it comes with lowercase
 
-### Why schedule is stored at once
+## Why schedule is stored at once
 To lessen roundrip to redis (is it tangible at all?)
 - in PHP get/set takes 1,2,9 ms sometimes. Connection included
 - do we need to lock?
 
-### TODO 
+## TODO 
 - recreate checklists folder instead of coding source dir in name?
