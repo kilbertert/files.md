@@ -1,0 +1,79 @@
+package worker
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/alicebob/miniredis/v2"
+	"github.com/spf13/afero"
+	"golang.org/x/exp/slog"
+
+	"zakirullin/dumpbot/internal/db"
+	"zakirullin/dumpbot/internal/fs"
+	"zakirullin/dumpbot/internal/sched"
+)
+
+func MoveDueTasksToToday(redis *miniredis.Miniredis) {
+	ids, err := fs.AllUserIDs()
+	if err != nil {
+		fmt.Printf("moveDueTasksForToday: %s\n", err)
+	}
+
+	for _, id := range ids {
+		database := db.NewDB(redis)
+		sch, err := database.Schedule(id)
+		if err != nil {
+			fmt.Printf("moveDueTasksForToday: can't get sch: %s", err)
+			return
+		}
+
+		fsys, err := fs.NewFS(id, afero.NewOsFs())
+		if err != nil {
+			fmt.Printf("moveDueTasksForToday: can't create FS: %s", err)
+			return
+		}
+		for filename, cron := range sch {
+			if time.Now().Unix() >= cron.RunAt {
+				err = moveTaskToToday(filename, fsys)
+				if err != nil {
+					slog.Error(fmt.Sprintf("moveDueTasksForToday: can't move: %s", err))
+				}
+
+				if len(cron.Cron) != 0 {
+					err = database.AddToSchedule(id, filename, sched.Next(cron.Cron), cron.Cron)
+					if err != nil {
+						fmt.Printf("err")
+					}
+
+					continue
+				}
+
+				err = database.DelFromSchedule(id, filename)
+				if err != nil {
+					fmt.Printf("err")
+				}
+			}
+		}
+	}
+}
+
+func moveTaskToToday(filename string, fsys *fs.FS) error {
+	dirsToLookFor := []string{fs.DirLater, fs.DirTrash}
+	for _, dir := range dirsToLookFor {
+		filenames, err := fsys.FilesAndDirs(dir)
+		if err != nil {
+			return fmt.Errorf("moveTaskForToday: %w", err)
+		}
+
+		for _, f := range filenames {
+			if f.Name == filename {
+				err = fsys.Rename(dir, filename, fs.DirToday, filename)
+				if err != nil {
+					return fmt.Errorf("moveTaskForToday: can't rename: %w", err)
+				}
+			}
+		}
+	}
+
+	return nil
+}
