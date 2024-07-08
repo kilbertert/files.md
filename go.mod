@@ -3,7 +3,6 @@ module zakirullin/stuffbot
 go 1.20
 
 require (
-	github.com/Kunde21/markdownfmt/v3 v3.1.0
 	github.com/alicebob/miniredis/v2 v2.30.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/joho/godotenv v1.5.1
@@ -20,8 +19,7 @@ require (
 require (
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/lmittmann/tint v0.3.4 // indirect
-	github.com/mattn/go-runewidth v0.0.9 // indirect
+	github.com/lmittmann/tint v0.3.4
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.4.7
 	github.com/yuin/gopher-lua v1.1.0 // indirect
