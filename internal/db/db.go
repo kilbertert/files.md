@@ -75,7 +75,7 @@ func (db *DB) SetInputExpectation(userID int64, cmd tg.Cmd) error {
 
 	err = db.redis.Set(db.key(userID, redisInputExpectation), string(js))
 	if err != nil {
-		return fmt.Errorf("db set input expectation can't save to redis: %w", err)
+		return fmt.Errorf("db input expectation can't save to redis: %w", err)
 	}
 
 	return nil
@@ -83,10 +83,11 @@ func (db *DB) SetInputExpectation(userID int64, cmd tg.Cmd) error {
 
 func (db *DB) DelInputExpectation(userID int64) error {
 	key := db.key(userID, redisInputExpectation)
-	ok := db.redis.Del(key)
-	if !ok {
-		return errors.New(fmt.Sprintf("db set input expectation: can't del key %s", key))
-	}
+	_ = db.redis.Del(key)
+	// TODO real redis can have network errors during del
+	// if !ok {
+	// 	return errors.New(fmt.Sprintf("can't del input expectation key: %s", key))
+	// }
 
 	return nil
 }

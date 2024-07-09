@@ -109,7 +109,7 @@ func (b *Bot) Reply(u UpdInterface) error {
 
 	cmd, err := b.extractCmd(u)
 	if err != nil {
-		return fmt.Errorf("extract cmd: %w", err)
+		return fmt.Errorf("reply: %w", err)
 	}
 	if cmd != nil {
 		if _, ok := u.CallbackQueryID(); !ok {
@@ -187,6 +187,11 @@ func (b *Bot) handlers() map[string]func([]string) error {
 func (b *Bot) extractCmd(u UpdInterface) (*tg.Cmd, error) {
 	cmd := u.Cmd()
 	if cmd != nil {
+		err := b.db.DelInputExpectation(b.userID)
+		if err != nil {
+			return nil, fmt.Errorf("extract cmd from update: %w", err)
+		}
+
 		return cmd, nil
 	}
 
@@ -196,6 +201,7 @@ func (b *Bot) extractCmd(u UpdInterface) (*tg.Cmd, error) {
 		return nil, fmt.Errorf("extract cmd: %w", err)
 	}
 	if cmd != nil {
+		slog.Debug("Got command from input expectation", "command", cmd.Name)
 		err = b.db.DelInputExpectation(b.userID)
 		if err != nil {
 			return nil, fmt.Errorf("extract cmd: %w", err)
