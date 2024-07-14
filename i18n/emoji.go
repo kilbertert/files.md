@@ -3,27 +3,19 @@ package i18n
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"os"
 	"strings"
+	_ "embed"
 )
 
-func LoadEmojiFile(path string) error {
-	emojiFile, err := os.Open(path)
-	if err != nil {
-		return fmt.Errorf("i18n.LoadEmojiFile: %w", err)
-	}
-	defer emojiFile.Close()
 
-	bytes, err := io.ReadAll(emojiFile)
-	if err != nil {
-		return fmt.Errorf("i18n.LoadEmojiFile: %w", err)
-	}
+//go:embed emojis.json
+var emojisJSON string
 
+func LoadEmojiFile() {
 	var emojis map[string][]string
-	err = json.Unmarshal(bytes, &emojis)
+	err := json.Unmarshal([]byte(emojisJSON), &emojis)
 	if err != nil {
-		return fmt.Errorf("i18n.LoadEmojiFile: can't unmarshal: %w", err)
+		panic(fmt.Errorf("i18n.loadEmojiFile: can't unmarshal: %w", err))
 	}
 
 	emojisByKeyword = make(map[string]string)
@@ -32,26 +24,37 @@ func LoadEmojiFile(path string) error {
 			emojisByKeyword[keyword] = emoji
 		}
 	}
-
-	return nil
 }
 
 func Emojify(str string) string {
+	emoji := Emoji(str)
+	if len(emoji) == 0 {
+		return str
+	}
+
+	return fmt.Sprintf("%s %s", emoji, str)
+}
+
+func Emoji(str string) string {
+	if len(emojisByKeyword) == 0 {
+		LoadEmojiFile()
+	}
+
 	strLower := strings.ToLower(str)
 	aliases := []string{strLower, strLower + "s", strings.TrimSuffix(strLower, "s")}
 	for _, alias := range aliases {
 		icon, _ := emojisByKeyword[alias]
 		if icon != "" {
-			return fmt.Sprintf("%s %s", icon, str)
+			return icon
 		}
 	}
 
 	for _, word := range strings.Fields(str) {
 		icon, _ := emojisByKeyword[word]
 		if icon != "" {
-			return fmt.Sprintf("%s %s", icon, str)
+			return icon
 		}
 	}
 
-	return str
+	return ""
 }

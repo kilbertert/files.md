@@ -82,6 +82,9 @@ var quickPanelAvailableCmds = []CmdMeta{
 	{constants.CmdShowDoc, "Documents", i18n.EmDocs},
 	{constants.CmdShowChecklists, "Checklists", i18n.EmCheckList},
 	{constants.CmdShowPostpone, "Postpone", i18n.EmPostpone},
+	{constants.CmdShowReadChecklist, "Read", i18n.Emoji("Read")},
+	{constants.CmdShowWatchChecklist, "Watch", i18n.Emoji("Watch")},
+	{constants.CmdShowShopChecklist, "Shop", i18n.Emoji("Shop")},
 }
 
 func NewBot(userID int64, tg TGInterface, fs *fs.FS, db *db.DB, conf *userconfig.Config) *Bot {
@@ -156,7 +159,7 @@ func (b *Bot) handlers() map[string]func([]string) error {
 		// Button's commands (callbacks)
 		constants.CmdRenameFile:         b.showRenameFile,
 		constants.CmdShowMultilineTask:  b.showTask,
-		constants.CmdShowDoc:            b.showDoc,
+		constants.CmdShowDoc:           b.showDoc,
 		constants.CmdShowChecklist:      b.showChecklist,
 		constants.CmdShowChooseDay:      b.showChooseDay,
 		constants.CmdShowToFile:         b.showToFile,

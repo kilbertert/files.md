@@ -37,4 +37,7 @@ const (
 	CmdConfigurePanel     = "configure_panel"
 	CmdAddToPanel         = "panel_add"
 	CmdDelFromPonel       = "panel_del"
+	CmdShowReadChecklist = "read"
+	CmdShowWatchChecklist = "watch"
+	CmdShowShopChecklist  = "shop"
 )

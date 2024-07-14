@@ -601,9 +601,12 @@ var (
 )
 
 var (
-	btnDocumentsAdd  = tg.NewBtn("📝 Documents ➕", tg.NewCmd("panel_add", []string{"doc"}))
-	btnChecklistsAdd = tg.NewBtn("☑️ Checklists ➕", tg.NewCmd("panel_add", []string{"checklists"}))
-	btnPostponeAdd   = tg.NewBtn("🦥 Postpone ➕", tg.NewCmd("panel_add", []string{"postpone"}))
+	btnDocumentsAdd   = tg.NewBtn("📝 Documents ➕", tg.NewCmd("panel_add", []string{"doc"}))
+	btnChecklistsAdd  = tg.NewBtn("☑️ Checklists ➕", tg.NewCmd("panel_add", []string{"checklists"}))
+	btnPostponeAdd    = tg.NewBtn("🦥 Postpone ➕", tg.NewCmd("panel_add", []string{"postpone"}))
+	btnReadChecklist  = tg.NewBtn("📚 Read ➕", tg.NewCmd("panel_add", []string{"read"}))
+	btnWatchChecklist = tg.NewBtn("📺 Watch ➕", tg.NewCmd("panel_add", []string{"watch"}))
+	btnShopChecklist  = tg.NewBtn("🛒 Shop ➕", tg.NewCmd("panel_add", []string{"shop"}))
 )
 
 func TestConfigureQP_Empty_Default(t *testing.T) {
@@ -615,6 +618,9 @@ func TestConfigureQP_Empty_Default(t *testing.T) {
 			btnDocumentsAdd,
 			btnChecklistsAdd,
 			btnPostponeAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -629,6 +635,9 @@ func TestConfigureQP_Empty_AddDoc(t *testing.T) {
 			delimiter,
 			btnChecklistsAdd,
 			btnPostponeAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -643,6 +652,9 @@ func TestConfigureQP_Doc_AddCheckList(t *testing.T) {
 			btnChecklistsDel,
 			delimiter,
 			btnPostponeAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -657,6 +669,9 @@ func TestConfigureQP_DocChecklists_AddPostpone(t *testing.T) {
 			btnChecklistsDel,
 			btnPostponeDel,
 			delimiter,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -671,6 +686,9 @@ func TestConfigureQP_DocChecklistsPostpone_Show(t *testing.T) {
 			btnChecklistsDel,
 			btnPostponeDel,
 			delimiter,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -685,6 +703,9 @@ func TestConfigureQP_DocChecklistsPostpone_DelChecklists(t *testing.T) {
 			btnPostponeDel,
 			delimiter,
 			btnChecklistsAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -699,6 +720,9 @@ func TestConfigureQP_DocPostpone_DelDoc(t *testing.T) {
 			delimiter,
 			btnDocumentsAdd,
 			btnChecklistsAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)
@@ -713,6 +737,9 @@ func TestConfigureQP_Postpone_DelPostpone(t *testing.T) {
 			btnDocumentsAdd,
 			btnChecklistsAdd,
 			btnPostponeAdd,
+			btnReadChecklist,
+			btnWatchChecklist,
+			btnShopChecklist,
 			backBtn,
 		},
 	}, t)

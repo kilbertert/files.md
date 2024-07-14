@@ -45,15 +45,10 @@ func main() {
 		panic(fmt.Sprintf("Error loading conf: %s\n", err))
 	}
 
-	// TODO move to config
+	// TODO move to embed
 	err = i18n.LoadLangFile("i18n/ru.json")
 	if err != nil {
 		panic(fmt.Sprintf("Error loading i18n: %s\n", err))
-	}
-	// TODO move to config
-	err = i18n.LoadEmojiFile("i18n/emojis.json")
-	if err != nil {
-		panic(fmt.Sprintf("Error loading emoji: %s\n", err))
 	}
 
 	api, err := tgbotapi.NewBotAPI(conf.BotAPIToken)
