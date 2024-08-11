@@ -22,7 +22,7 @@ const (
 	CmdShowChooseDay      = "to_day"
 	CmdShowToFile         = "to_file"
 	CmdShowToChecklist    = "to_checklist"
-	CmdMoveToDir          = "mv_to_dir"
+	CmdMoveToDir          = "mv"
 	CmdMoveToNewDir       = "mv_to_new_dir"
 	CmdMoveToExistingFile = "mv_to_file"
 	CmdMoveToNewFile      = "mv_to_new_doc"
