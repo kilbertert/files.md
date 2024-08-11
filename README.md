@@ -53,7 +53,6 @@ Any file can be uniquely identified by filename and dir. We only support one lev
 - Check list items: `/-shop-/cheese.md` (`-*-/*.md`)
 
 ## ADRs (Architecture Decision Records)
-- First message in tg has id=1, so we can use -1 as a special value, even though I don't particularly like it :)
 - Sanitize Early, we gave up sanitizing in Path method. That's an unexpected behaviour - it breaks paths. We should sanitize everything as soon as we received. Most commands work with md5 hashes, for such cases no sanitize is needed
 - `gofumpt` for stricter formatting. `gofumpt` is happy with a subset of the formats that gofmt is happy with. The less we have to choose between different formating options, the better
 - FS's structure should have userFS name, to reflect the fact it user user-namespaced

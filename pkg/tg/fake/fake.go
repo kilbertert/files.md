@@ -73,8 +73,8 @@ func (m *Upd) IsSentViaBot() bool {
 	return false
 }
 
-func (m *Upd) ReplyToMsgID() int {
-	return m.ReplyToMessageID
+func (m *Upd) ReplyToMsgID() (int, bool) {
+	return m.ReplyToMessageID, m.ReplyToMessageID != -1
 }
 
 func (m *Upd) PhotoOrImageID() (string, bool) {

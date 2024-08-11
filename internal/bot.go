@@ -56,7 +56,7 @@ type UpdInterface interface {
 	InlineQuery() (string, bool)
 	InlineQueryOffset() int
 	IsSentViaBot() bool
-	ReplyToMsgID() int
+	ReplyToMsgID() (int, bool)
 	PhotoOrImageID() (string, bool)
 	Caption() string
 }
@@ -72,7 +72,7 @@ type TGInterface interface {
 }
 
 type DBInterface interface {
-	LastKeyboardMsgID(userID int64) int
+	LastKeyboardMsgID(userID int64) (int, bool)
 	SetLastKeyboardMsgID(userID int64, ID int)
 	DelLastKeyboardMsgID(userID int64)
 	InputExpectation(userID int64) *tg.Cmd
@@ -279,9 +279,8 @@ func (b *Bot) saveFromRegularMsg(u UpdInterface) error {
 	}
 
 	// Adding to an existing file
-	isReply := u.ReplyToMsgID() != -1
-	if isReply {
-		return b.addToRepliedFile(u.ReplyToMsgID(), content)
+	if replyMsgID, ok := u.ReplyToMsgID(); ok {
+		return b.addToRepliedFile(replyMsgID, content)
 	}
 
 	sanitizedTitle := fs.SanitizeFilename(title)
@@ -324,9 +323,8 @@ func (b *Bot) saveFromPhoto(u UpdInterface) error {
 	}
 
 	// Adding to an existing file
-	isReply := u.ReplyToMsgID() != -1
-	if isReply {
-		return b.addToRepliedFile(u.ReplyToMsgID(), content)
+	if replyMsgID, ok := u.ReplyToMsgID(); ok {
+		return b.addToRepliedFile(replyMsgID, content)
 	}
 
 	// Creating a new file
@@ -497,9 +495,9 @@ func (b *Bot) tr(str string, args ...any) string {
 // Replace last message + keyboard with the new ones
 // Or show the new one (in case of photo)
 func (b *Bot) show(text string, kb *tg.Keyboard, markup string) error {
-	mid := b.db.LastKeyboardMsgID(b.userID)
+	mid, hasLastKeyboard := b.db.LastKeyboardMsgID(b.userID)
 	textChunks := txt.SplitTextIntoChunks(text, maxMsgLength)
-	if mid == -1 || len(textChunks) > 1 {
+	if !hasLastKeyboard || len(textChunks) > 1 {
 		b.delAllKeyboards()
 
 		// If our msg is too long, we send a few messages.
@@ -906,8 +904,8 @@ func (b *Bot) showMultilineTask(params []string) error {
 		return fmt.Errorf("show task: %w", err)
 	}
 
-	msgID := b.db.LastKeyboardMsgID(b.userID)
-	if msgID != -1 {
+	msgID, hasLastKeyboard := b.db.LastKeyboardMsgID(b.userID)
+	if hasLastKeyboard {
 		b.db.SetFilenameByMsgID(b.userID, msgID, filename)
 		b.db.SetDirByMsgID(b.userID, msgID, dir)
 	}
@@ -943,8 +941,8 @@ func (b *Bot) showFile(params []string) error {
 		return fmt.Errorf("show file: %w", err)
 	}
 
-	msgID := b.db.LastKeyboardMsgID(b.userID)
-	if msgID != -1 {
+	msgID, hasLastKeyboard := b.db.LastKeyboardMsgID(b.userID)
+	if hasLastKeyboard {
 		b.db.SetFilenameByMsgID(b.userID, msgID, filename)
 		b.db.SetDirByMsgID(b.userID, msgID, dir)
 	}
@@ -1262,8 +1260,8 @@ func (b *Bot) schedule(params []string) error {
 
 func (b *Bot) delAllKeyboards() {
 	var msgIDs []int
-	mid := b.db.LastKeyboardMsgID(b.userID)
-	if mid != -1 {
+	mid, hasLastKeyboard := b.db.LastKeyboardMsgID(b.userID)
+	if hasLastKeyboard {
 		b.db.DelLastKeyboardMsgID(b.userID)
 		msgIDs = append(msgIDs, mid)
 	}

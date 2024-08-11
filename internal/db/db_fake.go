@@ -13,8 +13,8 @@ func NewFakeDB() *FakeDB {
 	return &FakeDB{}
 }
 
-func (db *FakeDB) LastKeyboardMsgID(userID int64) int {
-	return -1
+func (db *FakeDB) LastKeyboardMsgID(userID int64) (int, bool) {
+	return 0, false
 }
 
 func (db *FakeDB) SetLastKeyboardMsgID(userID int64, ID int) {

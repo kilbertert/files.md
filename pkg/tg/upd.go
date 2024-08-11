@@ -116,7 +116,7 @@ func (u *Upd) InlineQuery() (string, bool) {
 
 func (u *Upd) InlineQueryOffset() int {
 	if u.raw.InlineQuery == nil {
-		return -1
+		return 0
 	}
 
 	offset, _ := strconv.Atoi(u.raw.InlineQuery.Offset)
@@ -154,19 +154,17 @@ func (u *Upd) IsSentViaBot() bool {
 	return message.ViaBot != nil
 }
 
-// ReplyToMsgID returns -1 if there's no reply to message
-// TODO get rid of -1
-func (u *Upd) ReplyToMsgID() int {
+func (u *Upd) ReplyToMsgID() (int, bool) {
 	message := u.raw.Message
 	if message == nil {
-		return -1
+		return 0, false
 	}
 
 	if message.ReplyToMessage == nil {
-		return -1
+		return 0, false
 	}
 
-	return message.ReplyToMessage.MessageID
+	return message.ReplyToMessage.MessageID, true
 }
 
 func (u *Upd) PhotoOrImageID() (string, bool) {

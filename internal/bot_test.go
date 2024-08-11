@@ -599,7 +599,7 @@ func TestCompleteItemInChecklist(t *testing.T) {
 
 	tgram := fake.NewTG()
 	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), &userconfig.DefaultConfig)
-	err = bot.Answer(fake.NewUpdCmdFake(-1, tg.NewCmd("comp_checklist", []string{"8d2335b5ff3", "7b72407ca70"})))
+	err = bot.Answer(fake.NewUpdCmdFake(-1, tg.NewCmd("cc", []string{"8d2335b5ff3", "7b72407ca70"})))
 	r.NoError(err)
 
 	r.Equal("Checklist1", tgram.LastSentText)

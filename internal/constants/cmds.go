@@ -1,5 +1,7 @@
 package constants
 
+// Telegram only allows 64 bytes in callback_data,
+// So we have to be really short :)
 const (
 	CmdShowStart          = "start"
 	CmdDoNothing          = "nothing"

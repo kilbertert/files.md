@@ -21,14 +21,13 @@ func NewDB() *DB {
 	return &DB{}
 }
 
-// LastKeyboardMsgID returns 0 when there is no message with keyboard attached
-func (db *DB) LastKeyboardMsgID(userID int64) int {
+func (db *DB) LastKeyboardMsgID(userID int64) (int, bool) {
 	id, ok := lastKeyboardMsgIDs.Load(lastKeyboardMsgIDKey(userID))
 	if !ok {
-		return -1
+		return 0, false
 	}
 
-	return id.(int)
+	return id.(int), true
 }
 
 func (db *DB) SetLastKeyboardMsgID(userID int64, ID int) {
