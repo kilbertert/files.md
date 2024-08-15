@@ -1,9 +1,8 @@
 package txt
 
 import (
-	"fmt"
-	"regexp"
 	"strings"
+	"unicode"
 )
 
 // MarkdownToHtml converts user's markdown to Telegram-supported subset of HTML
@@ -22,33 +21,178 @@ import (
 // <pre><code class="language-python">pre-formatted fixed-width code block written in the Python programming language</code></pre>
 // <blockquote>Block quotation started\nBlock quotation continued\nThe last line of the block quotation</blockquote>
 // <blockquote expandable>Expandable block quotation started\nExpandable block quotation continued\nExpandable block quotation continued\nHidden by default part of the block quotation started\nExpandable block quotation continued\nThe last line of the block quotation</blockquote>
-func MarkdownToHtml(markdown string) string {
-	// Define the regex patterns for different markdown elements
-	codeBlockPattern := regexp.MustCompile("```([\\s\\S]*?)```")
-	inlineCodePattern := regexp.MustCompile("`(.+?)`")
-	boldPattern := regexp.MustCompile(`(\*\*|__)(.+?)(\*\*|__)`)
-	italicPattern := regexp.MustCompile(`(\*|_)(.+?)(\*|_)`)
-	headerPattern := regexp.MustCompile(`(#{1,6})\s*(.+)`)
+// **abc****d** is usually rendered as <b>abc****d</b> by most MD parsers.
+// Obsidian renders that as <b>abc**</b>d**, somewhat greedy style,
+// and we'll use similar approach for simplicity.
 
-	// Find and replace code blocks with placeholders
-	codeBlocks := codeBlockPattern.FindAllStringSubmatch(markdown, -1)
-	for i, codeBlock := range codeBlocks {
-		placeholder := fmt.Sprintf("{{{CODEBLOCK_%d}}}", i)
-		markdown = strings.Replace(markdown, codeBlock[0], placeholder, 1)
+type token struct {
+	consumed string
+	left     string
+}
+
+type Parser func(input string) []token
+
+var openTags = map[string]string{
+	"*":  "<i>",
+	"**": "<b>",
+	"_":  "<i>",
+	"__": "<b>",
+	"`":  "<code>",
+}
+
+var closeTags = map[string]string{
+	"*":  "</i>",
+	"**": "</b>",
+	"_":  "</i>",
+	"__": "</b>",
+	"`":  "</code>",
+}
+
+func term(t string) Parser {
+	return func(input string) []token {
+		if strings.HasPrefix(input, t) {
+			return []token{{"[" + t + "]", input[len(t):]}}
+		}
+		return nil
+	}
+}
+
+func openTerm(t string) Parser {
+	return func(input string) []token {
+		if strings.HasPrefix(input, t) {
+			return []token{{openTags[t], input[len(t):]}}
+		}
+		return nil
+	}
+}
+
+func closeTerm(t string) Parser {
+	return func(input string) []token {
+		if strings.HasPrefix(input, t) {
+			return []token{{closeTags[t], input[len(t):]}}
+		}
+		return nil
+	}
+}
+
+func digit() Parser {
+	return func(input string) []token {
+		if len(input) > 0 && unicode.IsDigit(rune(input[0])) {
+			return []token{{string(input[0]), input[1:]}}
+		}
+		return nil
+	}
+}
+
+func alphaNumeric() Parser {
+	return func(input string) []token {
+		if len(input) > 0 && (unicode.IsLetter(rune(input[0])) || unicode.IsDigit(rune(input[0]))) {
+			return []token{{string(input[0]), input[1:]}}
+		}
+		return nil
+	}
+}
+
+func emptyString() Parser {
+	return func(input string) []token {
+		if input == "" {
+			return []token{{"", input}}
+		}
+		return nil
+	}
+}
+
+func or(lhs, rhs Parser) Parser {
+	return func(input string) []token {
+		return append(lhs(input), rhs(input)...)
+	}
+}
+
+func and(lhs, rhs Parser) Parser {
+	return func(input string) []token {
+		var results []token
+		for _, litem := range lhs(input) {
+			for _, ritem := range rhs(litem.left) {
+				if litem.consumed != "" && ritem.consumed != "" {
+					results = append(results, token{litem.consumed + ritem.consumed, ritem.left})
+				}
+			}
+		}
+		return results
+	}
+}
+
+func recursive(input string, parser Parser, depth int) []token {
+	var results []token
+	empty := true
+	for _, item := range parser(input) {
+		if item.consumed == "" {
+			continue
+		}
+		empty = false
+		for _, child := range recursive(item.left, parser, depth+1) {
+			results = append(results, token{item.consumed + child.consumed, child.left})
+		}
+	}
+	if empty && depth != 0 {
+		results = append(results, token{"", input})
 	}
 
-	// Replace markdown elements with HTML tags
-	markdown = inlineCodePattern.ReplaceAllString(markdown, `<code>$1</code>`)
-	markdown = boldPattern.ReplaceAllString(markdown, `<b>$2</b>`)
-	markdown = italicPattern.ReplaceAllString(markdown, `<i>$2</i>`)
-	markdown = headerPattern.ReplaceAllString(markdown, `<b>$2</b>`)
+	return results
+}
 
-	// Replace placeholders with the original code blocks wrapped in appropriate tags
-	for i, codeBlock := range codeBlocks {
-		placeholder := fmt.Sprintf("{{{CODEBLOCK_%d}}}", i)
-		codeHTML := fmt.Sprintf("<pre>%s</pre>", codeBlock[1])
-		markdown = strings.Replace(markdown, placeholder, codeHTML, 1)
+// some applies the parser for more than one time. Each parse result is combined with the previous result.
+// And each parse can generate multiple results.
+func some(parser Parser) Parser {
+	return func(input string) []token {
+		return recursive(input, parser, 0)
+	}
+}
+
+func zeroOrMore(parser Parser) Parser {
+	return func(input string) []token {
+		return recursive(input, parser, 1)
+	}
+}
+
+// markdown incrementally yields when it encounters a *, **, _, __ or `
+func markdown() Parser {
+	return func(input string) []token {
+		for i := 0; i < len(input); i++ {
+			if input[i] == '*' || input[i] == '_' || input[i] == '`' {
+				return []token{{input[:i], input[i:]}}
+			}
+		}
+		if len(input) > 0 && (input[len(input)-1] == '*' || input[len(input)-1] != '_' || input[len(input)-1] != '`') {
+			return []token{{input, ""}}
+		}
+		return nil
+	}
+}
+
+func MarkdownToHtml(md string) string {
+	var htmlEscaper = strings.NewReplacer(
+		`&`, "&amp;",
+		`<`, "&lt;",
+		`>`, "&gt;",
+	)
+	md = htmlEscaper.Replace(md)
+	// By this point our markdown is safe to send as HTML via Telegram.
+	// There won't be any issues like "missing closing HTML tag",
+	// for the cases when our markdown has some html tags.
+	// We try to convert as much markdown as possible to Telegram HTML.
+
+	text := markdown()
+	code := and(term("`"), and(text, term("`")))
+	italic := or(and(openTerm("*"), and(or(code, text), closeTerm("*"))), and(openTerm("_"), and(or(code, text), closeTerm("_"))))
+	italicOrText := or(italic, text)
+	bold := or(and(openTerm("**"), and(some(italicOrText), closeTerm("**"))), and(openTerm("__"), and(some(italicOrText), closeTerm("__"))))
+	span := or(bold, or(italic, or(code, text)))
+	doc := some(span)
+
+	for _, tok := range doc(md) {
+		return tok.consumed
 	}
 
-	return markdown
+	return md
 }
