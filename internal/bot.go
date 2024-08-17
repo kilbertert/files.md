@@ -995,12 +995,11 @@ func (b *Bot) showChecklist(params []string) error {
 	kb := tg.NewKeyboard(nil)
 	for _, item := range items {
 		if item.IsMultiline {
-			title := txt.Emoji(i18n.Emoji("eyes"), item.Title)
+			title := txt.Emoji(i18n.Emoji("eyes"), i18n.Emojify(item.Title))
 			kb.AddRow(tg.NewBtn(title, tg.NewCmd(consts.CmdShowChecklistItem, []string{dirHash, item.Hash})))
 		} else {
-			kb.AddRow(tg.NewBtn(item.Title, tg.NewCmd(consts.CmdCompleteChecklistItem, []string{dirHash, item.Hash})))
+			kb.AddRow(tg.NewBtn(i18n.Emojify(item.Title), tg.NewCmd(consts.CmdCompleteChecklistItem, []string{dirHash, item.Hash})))
 		}
-
 	}
 	kb.AddRow(tg.NewBtn(i18n.StrToday, tg.NewCmd(consts.CmdShowToday, nil)))
 
