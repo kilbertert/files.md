@@ -41,6 +41,22 @@ const timezoneTestCfg = `{
     "quickCommands": []
 }`
 
+const invalidTimezoneTestCfg = `{
+    "language": "en",
+    "timezone": "invalid/timezone",
+    "homeCommand": "today",
+    "moveToCommands": [
+        "sc_tmrw",
+        "later",
+        "sc_day",
+        "to_file",
+        "mv_to_journal"
+    ],
+    "pomodoroDurationInMinutes": 50,
+    "schedules": [],
+    "quickCommands": []
+}`
+
 func TestCreateDefaultIfNotExists(t *testing.T) {
 	r := require.New(t)
 
@@ -88,4 +104,19 @@ func TestTimezone(t *testing.T) {
 
 	tz := cfg.Timezone()
 	r.Equal("Europe/Nicosia", tz.String())
+}
+
+func TestTimezoneInvalid(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.Write("", "config.json", invalidTimezoneTestCfg)
+	r.NoError(err)
+
+	cfg := NewConfig(userFS, -1, "config.json")
+	r.NoError(err)
+
+	tz := cfg.Timezone()
+	r.Equal("UTC", tz.String())
 }

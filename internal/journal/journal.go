@@ -12,7 +12,7 @@ import (
 	"zakirullin/stuffbot/pkg/txt"
 )
 
-var now = time.Now
+var Now = time.Now
 
 // AddRecord adds a record for the current day.
 // Creates a file if there's no one for the current month
@@ -46,11 +46,11 @@ func AddRecord(userFS *fs.FS, record string, timezone *time.Location) error {
 	matches := re.FindStringSubmatch(record)
 	if len(matches) > 2 {
 		// If there's an image - place text under the image
-		modifiedText := fmt.Sprintf("%s%s ", matches[1], now().In(timezone).Format("`15:04`"))
+		modifiedText := fmt.Sprintf("%s%s ", matches[1], Now().In(timezone).Format("`15:04`"))
 		record = strings.Replace(record, matches[1], modifiedText, 1)
 		record = fmt.Sprintf("%s\n", strings.TrimSpace(record))
 	} else {
-		record = fmt.Sprintf("%s %s\n", now().In(timezone).Format("`15:04`"), record)
+		record = fmt.Sprintf("%s %s\n", Now().In(timezone).Format("`15:04`"), record)
 	}
 
 	md += record
@@ -104,10 +104,10 @@ func AddEmoji(userFS *fs.FS, emoji string, timezone *time.Location) error {
 }
 
 func todayJournalFilename(timezone *time.Location) string {
-	return now().In(timezone).Format("2006.01 January.md")
+	return Now().In(timezone).Format("2006.01 January.md")
 }
 
 func todayHeader(timezone *time.Location) string {
-	nowTZ := now().In(timezone)
+	nowTZ := Now().In(timezone)
 	return fmt.Sprintf("#### %d %s, %s", nowTZ.Day(), nowTZ.Format("January"), nowTZ.Weekday())
 }

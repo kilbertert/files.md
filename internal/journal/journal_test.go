@@ -12,11 +12,11 @@ import (
 
 func TestAddRecord(t *testing.T) {
 	r := require.New(t)
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2023, 0o5, 30, 10, 0o4, 36, 0, time.UTC)
 	}
 
@@ -93,11 +93,11 @@ func TestAddEmojiNewFile(t *testing.T) {
 
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2024, time.January, 1, 1, 0, 0, 0, time.UTC)
 	}
 
@@ -117,11 +117,11 @@ func TestAddEmojiExistingFile(t *testing.T) {
 	md := "#### 0, Sunday\nSome Note\n#### 1 January, Monday\nSome Note"
 	userFS.Write("journal", "2024.01 January.md", md)
 
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2024, time.January, 1, 1, 0, 0, 0, time.UTC)
 	}
 
@@ -141,11 +141,11 @@ func TestAddEmojiExistingFileMissingDay(t *testing.T) {
 	md := "#### 0, Sunday\nSome Note\n"
 	userFS.Write("journal", "2024.01 January.md", md)
 
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2024, time.January, 1, 1, 0, 0, 0, time.UTC)
 	}
 
@@ -165,11 +165,11 @@ func TestAddMoodEmojiExistingFileExistingEmojis(t *testing.T) {
 	md := "#### 0, Sunday\nSome Note\n#### 1 January, Monday 🌱📵\nSome Note"
 	userFS.Write("journal", "2024.01 January.md", md)
 
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2024, time.January, 1, 1, 0, 0, 0, time.UTC)
 	}
 
@@ -189,11 +189,11 @@ func TestAddRegularEmojiExistingFileExistingEmojis(t *testing.T) {
 	md := "#### 0, Sunday\nSome Note\n#### 1 January, Monday 🌱📵\nSome Note"
 	userFS.Write("journal", "2024.01 January.md", md)
 
-	savedNow := now
+	savedNow := Now
 	defer func() {
-		now = savedNow
+		Now = savedNow
 	}()
-	now = func() time.Time {
+	Now = func() time.Time {
 		return time.Date(2024, time.January, 1, 1, 0, 0, 0, time.UTC)
 	}
 

@@ -39,9 +39,11 @@ const (
 	quickBtnsPerRow        = 4
 	maxBtns                = 50
 	maxInlineResults       = 50
-	maxMsgLength           = 4096                         // In UTF-8 characters, skin-tone emojis count as 2
-	maxMsgsToSendAtOnce    = 5                            // For lengthy messages
-	wideSpacer             = "<code>            ⁠</code>" // Buttons shrink to the msg width, so we make the msg wider
+	maxMsgLength           = 4096 // In UTF-8 characters, skin-tone emojis count as 2
+	maxMsgsToSendAtOnce    = 5    // For lengthy messages
+
+	// Buttons shrink to the msg width, so we make the msg wider
+	wideSpacer = "<code>            ⁠</code>"
 )
 
 // UpdInterface represents incoming user updates
@@ -1267,9 +1269,18 @@ func (b *Bot) moveToJournal(params []string) error {
 	filenameHash := params[0]
 	filename, err := b.fs.Unhash(fs.DirToday, filenameHash)
 	if err != nil {
-		return fmt.Errorf("failed to move to journal: can't unhash filename: %w", err)
+		return fmt.Errorf("move to journal: can't unhash filename: %w", err)
 	}
-	err = journal.AddRecord(b.fs, filename, b.cfg.Timezone())
+	content, err := b.fs.Read(fs.DirToday, filename)
+	if err != nil {
+		return fmt.Errorf("move to journal: can't read content of '%s': %w", filename, err)
+	}
+	content = strings.TrimSpace(content)
+	if len(content) == 0 {
+		content = fs.Title(filename)
+	}
+
+	err = journal.AddRecord(b.fs, content, b.cfg.Timezone())
 	if err != nil {
 		return fmt.Errorf("failed to move to journal: can't add note: %w", err)
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 
+	"zakirullin/stuffbot/internal/journal"
 	"zakirullin/stuffbot/internal/sched"
 	"zakirullin/stuffbot/internal/userconfig"
 
@@ -1446,6 +1447,37 @@ func TestExtractCmdAtTheEnd(t *testing.T) {
 	r.NotNil(cmd)
 	r.Equal("j", cmd.Name)
 	r.Equal([]string{"Journal record"}, cmd.Params)
+}
+
+func TestMoveToJournal(t *testing.T) {
+	r := require.New(t)
+
+	savedNow := journal.Now
+	defer func() {
+		now = savedNow
+	}()
+	journal.Now = func() time.Time {
+		return time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	userFS.Write("today", "Note.md", "Multiline\ncontent")
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	err = bot.Answer(tg.NewFakeUpdCmd(-1, tg.NewCmd("mv_to_journal", []string{"345fbd7ab08"})))
+	r.NoError(err)
+
+	files, err := userFS.FilesAndDirs("journal")
+	r.NoError(err)
+	r.Len(files, 1)
+
+	content, err := userFS.Read("journal", files[0].Name)
+	r.NoError(err)
+	r.Equal("#### 1 January, Thursday\n`00:00` Multiline\ncontent\n", content)
 }
 
 func TestAddToJournalFromShortcut(t *testing.T) {
