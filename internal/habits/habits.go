@@ -35,12 +35,12 @@ var (
 func Habits(userFS *fs.FS, year int) (map[string]Year, error) {
 	filename := fmt.Sprintf("%d Habits.md", year)
 
-	isExists, err := userFS.Exists(fs.DirInsights, filename)
+	exists, err := userFS.Exists(fs.DirInsights, filename)
 	if err != nil {
 		return nil, fmt.Errorf("habits: can't check whether the file exists: %w", err)
 	}
 
-	if !isExists {
+	if !exists {
 		existingHabits, err := userFS.FilesAndDirs(fs.DirHabits)
 		if err != nil {
 			return nil, fmt.Errorf("habits: can't read existing habits: %w", err)

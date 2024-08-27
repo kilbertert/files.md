@@ -14,7 +14,7 @@ func TestWorldClock_ExecutePlugin_With_Time(t *testing.T) {
 	tg := tg.NewFakeTG()
 	worldClockPlugin := NewWorldClockPlugin(1, tg)
 
-	result := worldClockPlugin.ExecutePlugin("15.06.2023 15:30:00")
+	result := worldClockPlugin.TryToRun("15.06.2023 15:30:00")
 	r.True(result)
 }
 
@@ -23,7 +23,7 @@ func TestWorldClock_ExecutePlugin_With_Timestamp(t *testing.T) {
 	tg := tg.NewFakeTG()
 	worldClockPlugin := NewWorldClockPlugin(1, tg)
 
-	result := worldClockPlugin.ExecutePlugin("1686850214")
+	result := worldClockPlugin.TryToRun("1686850214")
 	r.True(result)
 }
 
@@ -32,7 +32,7 @@ func TestWorldClock_ExecutePlugin_With_BotCommand(t *testing.T) {
 	tg := tg.NewFakeTG()
 	worldClockPlugin := NewWorldClockPlugin(1, tg)
 
-	result := worldClockPlugin.ExecutePlugin("cmdShowStart")
+	result := worldClockPlugin.TryToRun("cmdShowStart")
 	r.False(result)
 }
 

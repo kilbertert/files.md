@@ -101,7 +101,7 @@ type Bot struct {
 }
 
 type BotPluginInterface interface {
-	ExecutePlugin(string) bool
+	TryToRun(string) bool
 }
 
 var now = time.Now
@@ -122,7 +122,7 @@ func (b *Bot) Answer(u UpdInterface) error {
 	}
 
 	for _, plugin := range botPlugins {
-		if plugin.ExecutePlugin(u.MsgText()) {
+		if plugin.TryToRun(u.MsgText()) {
 			return b.ShowTodayTasks(nil)
 		}
 	}

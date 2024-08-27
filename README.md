@@ -94,4 +94,3 @@ Refer to [the following document](https://github.com/zakirullin/cognitive-load) 
 - We wrap errors all the time, we should add method's context
 - We prefer real implementations or at least fakes over mocks and stubs
 - Imports should only be renamed to avoid a name collision with other imports
-- We use Is/Has prefixes for boolean variables

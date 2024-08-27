@@ -137,18 +137,17 @@ func moveTaskToLater(filename string, userFS *fs.FS) error {
 func moveTaskToToday(filename string, userFS *fs.FS) error {
 	dirsToLookFor := []string{fs.DirLater, fs.DirArchive}
 	for _, dir := range dirsToLookFor {
-		filenames, err := userFS.FilesAndDirs(dir)
+		exists, err := userFS.Exists(dir, filename)
 		if err != nil {
-			return fmt.Errorf("moveTaskForToday: %w", err)
+			return fmt.Errorf("moveTaskForToday: can't check for existence: %w", err)
+		}
+		if !exists {
+			continue
 		}
 
-		for _, f := range filenames {
-			if f.Name == filename {
-				err = userFS.Rename(dir, filename, fs.DirToday, filename)
-				if err != nil {
-					return fmt.Errorf("moveTaskForToday: can't rename: %w", err)
-				}
-			}
+		err = userFS.Rename(dir, filename, fs.DirToday, filename)
+		if err != nil {
+			return fmt.Errorf("moveTaskForToday: can't rename: %w", err)
 		}
 	}
 

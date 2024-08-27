@@ -51,7 +51,7 @@ func NewWorldClockPlugin(userID int64, tg TGInterface) *WorldClockPlugin {
 	return &WorldClockPlugin{userID, tg}
 }
 
-func (p *WorldClockPlugin) ExecutePlugin(msgText string) bool {
+func (p *WorldClockPlugin) TryToRun(msgText string) bool {
 	var message string
 	var time time.Time
 	var err error
