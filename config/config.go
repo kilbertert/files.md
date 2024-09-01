@@ -7,10 +7,11 @@ import (
 )
 
 type Configuration struct {
-	StoragePath    string `required:"true" envconfig:"STORAGE_PATH"`
-	BotAPIToken    string `required:"true" envconfig:"BOT_API_TOKEN"`
-	ConfigFilename string `default:"config.json"`
-	Host           string `default:"https://127.0.0.1"`
+	StoragePath     string `required:"true" envconfig:"STORAGE_PATH"`
+	BotAPIToken     string `required:"true" envconfig:"BOT_API_TOKEN"`
+	ConfigFilename  string `default:"config.json"`
+	HabitsHost      string `default:""`
+	HabitsCertsPath string `default:"/tmp"`
 }
 
 var Config Configuration

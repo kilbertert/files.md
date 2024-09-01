@@ -10,9 +10,12 @@ require (
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/spf13/afero v1.9.5
 	github.com/stretchr/testify v1.8.2
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/text v0.4.0
 )
+
+require golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

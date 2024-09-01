@@ -1,12 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
 	"net/http"
 	"path"
 	"strconv"
 	"time"
 
 	"github.com/spf13/afero"
+	"golang.org/x/crypto/acme/autocert"
 
 	"zakirullin/stuffbot/config"
 	"zakirullin/stuffbot/i18n"
@@ -17,9 +19,57 @@ import (
 	"zakirullin/stuffbot/pkg/txt"
 )
 
-// TODO graceful shutdown etc
-func habitsServer() {
+// TODO release graceful shutdown etc
+func habitsServer(habitsHost, habitsCertsPath string) {
+	autocertManager := autocert.Manager{
+		Prompt:     autocert.AcceptTOS,
+		HostPolicy: autocert.HostWhitelist(habitsHost),
+		Cache:      autocert.DirCache(habitsCertsPath),
+	}
+
+	// Listen for HTTP requests on port 80 in a new goroutine. Use
+	// autocertManager.HTTPHandler(nil) as the handler. This will send ACME
+	// "http-01" challenge responses as necessary, and 302 redirect all other
+	// requests to HTTPS.
+	go func() {
+		srv := &http.Server{
+			Addr:         ":80",
+			Handler:      autocertManager.HTTPHandler(nil),
+			IdleTimeout:  time.Minute,
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+		}
+
+		err := srv.ListenAndServe()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	// Configure the TLS config to use the autocertManager.GetCertificate function.
+	tlsConfig := &tls.Config{
+		GetCertificate:   autocertManager.GetCertificate,
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
+
 	router := http.NewServeMux()
+	setupRouter(router)
+	srv := &http.Server{
+		Addr:         ":443",
+		Handler:      router,
+		TLSConfig:    tlsConfig,
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	err := srv.ListenAndServeTLS("", "") // Key and cert provided automatically by autocert
+	if err != nil {
+		panic(err)
+	}
+}
+
+func setupRouter(router *http.ServeMux) {
 	// TODO add hashing or secrets
 	// TODO before release habits_v2 => habits
 	router.HandleFunc("GET /habits_v2/{userID}", func(w http.ResponseWriter, r *http.Request) {
@@ -100,10 +150,4 @@ func habitsServer() {
 			w.Write([]byte("can't write journal"))
 		}
 	})
-
-	// TODO before release, don't panic if we don't want habits
-	err := http.ListenAndServe(":81", router)
-	if err != nil {
-		panic(err)
-	}
 }

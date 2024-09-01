@@ -66,6 +66,7 @@ func main() {
 	// Due tasks scheduler
 	go func(tg *tg.TG) {
 		fsBackend := afero.NewOsFs()
+		// TODO release remove this complexity?
 		var lastFrozenRequestCheckAt time.Time // We use this parameter to avoid logging the same frozen request many times
 		for {
 			select {
@@ -86,9 +87,13 @@ func main() {
 		}
 	}(telegram)
 
-	go habitsServer()
+	// Launch habits server if needed
+	if config.Config.HabitsHost != "" {
+		go habitsServer(config.Config.HabitsHost, config.Config.HabitsCertsPath)
+	}
 
-	// Service
+	// Main service loop.
+	// Listen for updates from user and process them in separate goroutines.
 	tgConfig := tgbotapi.NewUpdate(0)
 	tgConfig.Timeout = 60 // TODO before release, check if it's enough
 	updates := api.GetUpdatesChan(tgConfig)

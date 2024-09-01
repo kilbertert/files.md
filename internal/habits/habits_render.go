@@ -35,7 +35,7 @@ func Render(userID int64, userFS *fs.FS) ([]byte, error) {
 		"habits":     habits,
 		"moods":      moods,
 		"moodEmojis": MoodEmojis,
-		"host":       config.Config.Host,
+		"host":       config.Config.HabitsHost,
 		"userID":     userID,
 		"currentDay": time.Now().YearDay(),
 	})
