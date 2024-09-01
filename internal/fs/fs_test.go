@@ -222,7 +222,7 @@ func TestOnlyChecklists(t *testing.T) {
 	r.Equal("-list-", dirs[0].Name)
 }
 
-func TestFS_TouchNew(t *testing.T) {
+func TestFSTouchNew(t *testing.T) {
 	r := require.New(t)
 
 	fs, _ := NewFS("/", afero.NewMemMapFs())
@@ -238,7 +238,7 @@ func TestFS_TouchNew(t *testing.T) {
 	r.True(exists)
 }
 
-func TestFS_TouchExisting(t *testing.T) {
+func TestFSTouchExisting(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Write("today", "a.md", "A")
@@ -262,7 +262,7 @@ func TestFS_TouchExisting(t *testing.T) {
 	r.Equal("A", content)
 }
 
-func TestFS_GetAllNotesInMatchingDir(t *testing.T) {
+func TestFSGetAllNotesInMatchingDir(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Touch("brain", "a.md")
@@ -278,7 +278,7 @@ func TestFS_GetAllNotesInMatchingDir(t *testing.T) {
 	r.Equal("a.md", notes[0].Name)
 }
 
-func TestFS_GetAllMatchingNotesInMatchingDir(t *testing.T) {
+func TestFSGetAllMatchingNotesInMatchingDir(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Touch("brain", "a.md")
@@ -295,7 +295,7 @@ func TestFS_GetAllMatchingNotesInMatchingDir(t *testing.T) {
 	r.Equal("a.md", notes[0].Name)
 }
 
-func TestFS_GetAllNotesInAllMatchingDirs(t *testing.T) {
+func TestFSGetAllNotesInAllMatchingDirs(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Touch("brain", "a.md")
@@ -317,7 +317,7 @@ func TestFS_GetAllNotesInAllMatchingDirs(t *testing.T) {
 	r.ElementsMatch([]string{"a.md", "b.md"}, noteFilenames)
 }
 
-func TestFS_GetAllMatchingNotesInAllMatchingDirs(t *testing.T) {
+func TestFSGetAllMatchingNotesInAllMatchingDirs(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Touch("brain", "a.md")
@@ -341,7 +341,7 @@ func TestFS_GetAllMatchingNotesInAllMatchingDirs(t *testing.T) {
 	r.ElementsMatch([]string{"a.md", "ab.md"}, noteFilenames)
 }
 
-func TestFS_GetAllNotesInAllDirsForEmptyQuery(t *testing.T) {
+func TestFSGetAllNotesInAllDirsForEmptyQuery(t *testing.T) {
 	r := require.New(t)
 	fs, _ := NewFS("/", afero.NewMemMapFs())
 	err := fs.Touch("brain", "a.md")
@@ -363,7 +363,7 @@ func TestFS_GetAllNotesInAllDirsForEmptyQuery(t *testing.T) {
 	r.ElementsMatch([]string{"a.md", "b.md"}, noteFilenames)
 }
 
-func TestFS_PathTraversalAttack(t *testing.T) {
+func TestFSPathTraversalAttack(t *testing.T) {
 	r := require.New(t)
 
 	fs, _ := NewFS("/", afero.NewMemMapFs())
@@ -376,7 +376,7 @@ func TestFS_PathTraversalAttack(t *testing.T) {
 	r.Equal("/root/.ssh/authorized_keys", path)
 }
 
-func TestFS_OnlyUserDirs(t *testing.T) {
+func TestFSOnlyUserDirs(t *testing.T) {
 	r := require.New(t)
 
 	fs, _ := NewFS("/", afero.NewMemMapFs())
@@ -441,4 +441,28 @@ func TestUnsanitizeFilename(t *testing.T) {
 	r.Equal("a/b", UnsanitizeFilename("a{|}b"))
 	r.Equal("a\\b", UnsanitizeFilename("a{||}b"))
 	r.Equal("a/b\\", UnsanitizeFilename("a{|}b{||}"))
+}
+
+func TestExists(t *testing.T) {
+	r := require.New(t)
+
+	fs, _ := NewFS("/", afero.NewMemMapFs())
+	err := fs.Write("today", "First task.md", "")
+	r.NoError(err)
+
+	exists, err := fs.Exists("today", "First task.md")
+	r.NoError(err)
+	r.True(exists)
+}
+
+func TestExistsRoot(t *testing.T) {
+	r := require.New(t)
+
+	fs, _ := NewFS("/", afero.NewMemMapFs())
+	err := fs.Write("today", "First task.md", "")
+	r.NoError(err)
+
+	exists, err := fs.Exists("", "")
+	r.NoError(err)
+	r.True(exists)
 }

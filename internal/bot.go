@@ -28,8 +28,10 @@ import (
 )
 
 var (
-	botPlugins        []BotPluginInterface
-	errUnknownCommand = errors.New("unknown command")
+	botPlugins                 []BotPluginInterface
+	errUnknownCommand          = errors.New("unknown command")
+	errIvalidRequestFromInline = errors.New("invalid request from inline query")
+	errInvalidInlineQuery      = errors.New("invalid inline query")
 )
 
 const (
@@ -121,7 +123,7 @@ func NewBot(userID int64, tg TGInterface, fs *fs.FS, db DBInterface, cfg *userco
 func (b *Bot) Answer(u UpdInterface) error {
 	// Handle inline queries
 	if _, ok := u.InlineQueryID(); ok {
-		return b.search(u)
+		return b.answerSearch(u)
 	}
 
 	for _, plugin := range botPlugins {
@@ -159,18 +161,21 @@ func (b *Bot) Answer(u UpdInterface) error {
 	}
 
 	// Handle inline query file requests
-	// TODO write tests for all sorts of tricky input with ../
 	if u.IsSentViaBot() {
+		if strings.Contains(u.MsgText(), "../") || strings.Contains(u.MsgText(), "/..") {
+			return fmt.Errorf("insecure input '%s': %w", u.MsgText(), errIvalidRequestFromInline)
+		}
+
 		dirAndFilename := strings.Split(u.MsgText(), "/")
 		var dir, filename string
 		if len(dirAndFilename) == 1 {
 			dir = fs.DirRoot
-			filename = dirAndFilename[0]
+			filename = strings.TrimSpace(dirAndFilename[0])
 		} else if len(dirAndFilename) == 2 {
-			dir = dirAndFilename[0]
-			filename = dirAndFilename[1]
+			dir = strings.TrimSpace(dirAndFilename[0])
+			filename = strings.TrimSpace(dirAndFilename[1])
 		} else {
-			return nil
+			return fmt.Errorf("invalid inline query '%s': %w", u.MsgText(), errIvalidRequestFromInline)
 		}
 
 		b.delAllKeyboards()
@@ -459,10 +464,14 @@ func (b *Bot) addToRepliedFile(replyToMsgID int, newContent string) error {
 	return b.ShowTodayTasks(nil)
 }
 
-func (b *Bot) search(u UpdInterface) error {
+func (b *Bot) answerSearch(u UpdInterface) error {
 	query, ok := u.InlineQuery()
 	if !ok {
 		return nil
+	}
+
+	if strings.Contains(query, "../") || strings.Contains(query, "/..") {
+		return fmt.Errorf("insecure input '%s': %w", query, errInvalidInlineQuery)
 	}
 
 	matchedNotes, err := b.fs.SearchNotes(query)

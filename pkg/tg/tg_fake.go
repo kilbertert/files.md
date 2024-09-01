@@ -5,11 +5,12 @@ import (
 )
 
 type FakeTG struct {
-	SentTexts      []string
-	LastSentText   string
-	EditedText     string
-	SentKeyboard   *Keyboard
-	EditedKeyboard *Keyboard
+	SentTexts          []string
+	LastSentText       string
+	EditedText         string
+	SentKeyboard       *Keyboard
+	EditedKeyboard     *Keyboard
+	InlineQueryResults []any
 }
 
 func NewFakeTG() *FakeTG {
@@ -40,6 +41,7 @@ func (f *FakeTG) AnswerCallbackQuery(queryID string, text string) error {
 }
 
 func (f *FakeTG) AnswerInlineQuery(queryID string, results []interface{}, cacheTime int, offset string) error {
+	f.InlineQueryResults = results
 	return nil
 }
 

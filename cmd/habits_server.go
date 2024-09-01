@@ -76,6 +76,7 @@ func setupRouter(router *http.ServeMux) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Files made to last"))
 	})
+
 	router.HandleFunc("GET /habits_v2/{userID}", func(w http.ResponseWriter, r *http.Request) {
 		userID, err := strconv.ParseInt(r.PathValue("userID"), 10, 64)
 		if err != nil {

@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"
 
@@ -1627,4 +1628,267 @@ func TestScheduleNoRepeat(t *testing.T) {
 	r.Len(sc, 1)
 	r.Equal("Task.md", sc[0].Filename)
 	r.Equal(int64(345600), sc[0].ScheduledAt)
+}
+
+func TestInlineRequestTask(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("today", "Task.md", "Task content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, " today / Task ")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.NoError(err)
+
+	r.Equal("Task\nTask content", tgram.LastSentText)
+}
+
+func TestInlineRequestFile(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, " File ")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.NoError(err)
+
+	r.Equal("File\nFile content", tgram.LastSentText)
+}
+
+func TestInlineRequestFileOutsideTheDirectory(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, "../File")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.Error(err)
+	r.EqualError(err, "insecure input '../File': invalid request from inline query")
+}
+
+func TestInlineRequestFileOutsideTheDirectoryTwoSlashes(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, "..//File")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.Error(err)
+	r.EqualError(err, "insecure input '..//File': invalid request from inline query")
+}
+
+func TestInlineRequestFileListOutsideDirs(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, "../")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.Error(err)
+	r.EqualError(err, "insecure input '../': invalid request from inline query")
+}
+
+func TestInlineRequestFileListRootDirs(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	// cd /tmp//.. would lead to root
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, "/..")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.Error(err)
+	r.EqualError(err, "insecure input '/..': invalid request from inline query")
+}
+
+func TestInlineRequestFileListRootDirsWithoutSlash(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	// cd /tmp/.. would lead to root
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	upd := tg.NewFakeUpd(-1, "..")
+	upd.IsSentViaBotVal = true
+
+	err = bot.Answer(upd)
+	r.Error(err)
+	r.EqualError(err, "show file: can't unhash '..' in '': cannot unhash, maybe the file is missing")
+}
+
+func TestAnswerSearch(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+
+	u := tg.NewFakeUpd(-1, "")
+	u.InlineQueryVal = "File"
+	u.IsInlineQueryVal = true
+
+	err = bot.answerSearch(u)
+	r.NoError(err)
+
+	var results []interface{}
+	article := tgbotapi.NewInlineQueryResultArticleHTML("0", "File", "File.md")
+	results = append(results, article)
+
+	r.Equal(results, tgram.InlineQueryResults)
+}
+
+func TestAnswerSearchShowAllRoot(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+	err = userFS.MakeDir("Dir")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+
+	u := tg.NewFakeUpd(-1, "")
+	u.InlineQueryVal = " "
+	u.IsInlineQueryVal = true
+
+	err = bot.answerSearch(u)
+	r.NoError(err)
+
+	var results []interface{}
+	article := tgbotapi.NewInlineQueryResultArticleHTML("0", "File", "File.md")
+	results = append(results, article)
+
+	r.Equal(results, tgram.InlineQueryResults)
+}
+
+func TestAnswerSearchShowOutsideTheRoot(t *testing.T) {
+	r := require.New(t)
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+	err = userFS.MakeDir("Dir")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+
+	u := tg.NewFakeUpd(-1, "")
+	u.InlineQueryVal = "../"
+	u.IsInlineQueryVal = true
+
+	err = bot.answerSearch(u)
+	r.Error(err)
+	r.EqualError(err, "insecure input '../': invalid inline query")
+}
+
+func TestAnswerSearchShowOutsideTheRootNoSlash(t *testing.T) {
+	r := require.New(t)
+
+	memFS := afero.NewMemMapFs()
+	err := afero.WriteFile(memFS, "/secret", []byte("secret"), 0o644)
+	r.NoError(err)
+
+	userFS, err := fs.NewFS("/-1", memFS)
+	r.NoError(err)
+	err = userFS.CreateDirsIfNotExist()
+	r.NoError(err)
+	err = userFS.Write("", "File.md", "File content")
+	r.NoError(err)
+	err = userFS.MakeDir("Dir")
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+
+	u := tg.NewFakeUpd(-1, "")
+	u.InlineQueryVal = ".."
+	u.IsInlineQueryVal = true
+
+	err = bot.answerSearch(u)
+	r.Error(err)
+	r.EqualError(err, "inline reply: search notes: exists: unsafe path '/': unsafe path, possible security issue")
 }

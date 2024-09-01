@@ -9,76 +9,86 @@ type FakeUpd struct {
 	PhotoID          string
 	PhotoCaption     string
 	ReplyToMessageID int
+	IsSentViaBotVal  bool
+	InlineQueryVal   string
+	IsInlineQueryVal bool
 }
 
 func NewFakeUpd(userID int64, msg string) *FakeUpd {
-	return &FakeUpd{userID: userID, Msg: msg, ReplyToMessageID: -1}
+	return &FakeUpd{
+		userID:           userID,
+		Msg:              msg,
+		ReplyToMessageID: -1,
+		IsSentViaBotVal:  false,
+		InlineQueryVal:   "",
+		IsInlineQueryVal: false,
+	}
 }
 
 func NewFakeUpdCmd(id int64, cmd Cmd) *FakeUpd {
 	return &FakeUpd{userID: id, cmd: cmd}
 }
 
-func (m *FakeUpd) MsgText() string {
-	return m.Msg
+func (u *FakeUpd) MsgText() string {
+	return u.Msg
 }
 
-func (m *FakeUpd) UserID() int64 {
-	return m.userID
+func (u *FakeUpd) UserID() int64 {
+	return u.userID
 }
 
-func (m *FakeUpd) Cmd() *Cmd {
-	if m.cmd.Name == "" {
+func (u *FakeUpd) Cmd() *Cmd {
+	if u.cmd.Name == "" {
 		return nil
 	}
 
-	return &m.cmd
+	return &u.cmd
 }
 
-func (m *FakeUpd) MsgEntities() []tgbotapi.MessageEntity {
+func (u *FakeUpd) MsgEntities() []tgbotapi.MessageEntity {
 	return nil
 }
 
-func (m *FakeUpd) CaptionEntities() []tgbotapi.MessageEntity {
+func (u *FakeUpd) CaptionEntities() []tgbotapi.MessageEntity {
 	return nil
 }
 
-func (m *FakeUpd) CallbackQueryID() (string, bool) {
+func (u *FakeUpd) CallbackQueryID() (string, bool) {
 	return "", true
 }
 
-func (m *FakeUpd) InlineQueryID() (string, bool) {
+func (u *FakeUpd) InlineQueryID() (string, bool) {
 	return "", false
 }
 
-func (m *FakeUpd) InlineQuery() (string, bool) {
-	return "", false
+func (u *FakeUpd) InlineQuery() (string, bool) {
+	return u.InlineQueryVal, u.IsInlineQueryVal
 }
 
-func (m *FakeUpd) InlineQueryOffset() int {
+func (u *FakeUpd) InlineQueryOffset() int {
 	return 0
 }
 
-func (m *FakeUpd) IsForwarded() bool {
+func (u *FakeUpd) IsForwarded() bool {
 	return false
 }
 
-func (m *FakeUpd) IsSentViaBot() bool {
-	return false
+func (u *FakeUpd) IsSentViaBot() bool {
+	return u.IsSentViaBotVal
 }
 
-func (m *FakeUpd) ReplyToMsgID() (int, bool) {
-	return m.ReplyToMessageID, m.ReplyToMessageID != -1
+func (u *FakeUpd) ReplyToMsgID() (int, bool) {
+	return u.ReplyToMessageID, u.ReplyToMessageID != -1
 }
 
-func (m *FakeUpd) PhotoOrImageID() (string, bool) {
-	if m.PhotoID != "" {
-		return m.PhotoID, true
+func (u *FakeUpd) PhotoOrImageID() (string, bool) {
+	if u.PhotoID != "" {
+		return u.PhotoID, true
 	}
 
 	return "", false
 }
 
-func (m *FakeUpd) Caption() string {
-	return m.PhotoCaption
+func (u *FakeUpd) Caption() string {
+	return u.PhotoCaption
 }

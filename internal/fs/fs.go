@@ -119,16 +119,16 @@ func (fs FS) CreateDirsIfNotExist() error {
 }
 
 func (fs FS) Exists(dir, filename string) (bool, error) {
-	path := fs.UnsafePath(dir, filename)
-	isSafe, err := fs.isSafe(path)
+	filePath := fs.UnsafePath(dir, filename)
+	isSafe, err := fs.isSafe(filePath)
 	if err != nil {
-		return false, fmt.Errorf("exists: can't check if the file is safe to access '%s': %w", path, err)
+		return false, fmt.Errorf("exists: can't check if the file is safe to access '%s': %w", filePath, err)
 	}
 	if !isSafe {
-		return false, fmt.Errorf("exists: unsafe path '%s': %w", path, errUnsafePath)
+		return false, fmt.Errorf("exists: unsafe path '%s': %w", filePath, errUnsafePath)
 	}
 
-	exists, err := afero.Exists(fs.backend, path)
+	exists, err := afero.Exists(fs.backend, filePath)
 	if err != nil {
 		return false, fmt.Errorf("exists: can't check whether the file '%s'/'%s' exists: %w", dir, filename, err)
 	}
@@ -137,42 +137,42 @@ func (fs FS) Exists(dir, filename string) (bool, error) {
 }
 
 func (fs FS) Read(dir, filename string) (string, error) {
-	path := fs.UnsafePath(dir, filename)
-	isSafe, err := fs.isSafe(path)
+	filePath := fs.UnsafePath(dir, filename)
+	isSafe, err := fs.isSafe(filePath)
 	if err != nil {
-		return "", fmt.Errorf("fs read: can't check if the file is safe to access '%s': %w", path, err)
+		return "", fmt.Errorf("fs read: can't check if the file is safe to access '%s': %w", filePath, err)
 	}
 	if !isSafe {
-		return "", fmt.Errorf("fs read: unsafe path '%s': %w", path, errUnsafePath)
+		return "", fmt.Errorf("fs read: unsafe filePath '%s': %w", filePath, errUnsafePath)
 	}
 
-	content, err := afero.ReadFile(fs.backend, path)
+	content, err := afero.ReadFile(fs.backend, filePath)
 	if err != nil {
-		return "", fmt.Errorf("fs read: can't read file '%s': %w", path, err)
+		return "", fmt.Errorf("fs read: can't read file '%s': %w", filePath, err)
 	}
 
 	return string(content), nil
 }
 
 func (fs FS) Write(dir, filename, content string) error {
-	path := fs.UnsafePath(dir, filename)
-	isSafe, err := fs.isSafe(path)
+	filePath := fs.UnsafePath(dir, filename)
+	isSafe, err := fs.isSafe(filePath)
 	if err != nil {
-		return fmt.Errorf("fs write: check if file is safe to access '%s': %w", path, err)
+		return fmt.Errorf("fs write: check if file is safe to access '%s': %w", filePath, err)
 	}
 
 	if !isSafe {
-		return fmt.Errorf("fs write: unsafe path '%s': %w", path, errUnsafePath)
+		return fmt.Errorf("fs write: unsafe filePath '%s': %w", filePath, errUnsafePath)
 	}
 
-	dirs := strings.Split(path, "/")
+	dirs := strings.Split(filePath, "/")
 	dirs = dirs[:len(dirs)-1]
 	pathToDir := strings.Join(dirs, "/")
 	if err := fs.backend.MkdirAll(pathToDir, 0o755); err != nil {
 		return fmt.Errorf("put: can't create dirs '%s': %w", pathToDir, err)
 	}
 
-	if err := afero.WriteFile(fs.backend, path, []byte(content), 0o644); err != nil {
+	if err := afero.WriteFile(fs.backend, filePath, []byte(content), 0o644); err != nil {
 		return fmt.Errorf("put to '%s/%s': %w", dir, filename, err)
 	}
 
@@ -180,16 +180,16 @@ func (fs FS) Write(dir, filename, content string) error {
 }
 
 func (fs FS) MakeDir(dir string) error {
-	path := fs.UnsafePath(dir, "")
-	isSafe, err := fs.isSafe(path)
+	filePath := fs.UnsafePath(dir, "")
+	isSafe, err := fs.isSafe(filePath)
 	if err != nil {
-		return fmt.Errorf("fs make dir: check if file is safe to access '%s': %w", path, err)
+		return fmt.Errorf("fs make dir: check if file is safe to access '%s': %w", filePath, err)
 	}
 	if !isSafe {
-		return fmt.Errorf("fs make dir: unsafe path '%s': %w", path, errUnsafePath)
+		return fmt.Errorf("fs make dir: unsafe filePath '%s': %w", filePath, errUnsafePath)
 	}
 
-	err = fs.backend.Mkdir(path, 0o755)
+	err = fs.backend.Mkdir(filePath, 0o755)
 	if err != nil {
 		return fmt.Errorf("fs can't make dir: %w", err)
 	}
@@ -198,18 +198,18 @@ func (fs FS) MakeDir(dir string) error {
 }
 
 func (fs FS) Del(dir, filename string) error {
-	path := fs.UnsafePath(dir, filename)
-	isSafe, err := fs.isSafe(path)
+	filePath := fs.UnsafePath(dir, filename)
+	isSafe, err := fs.isSafe(filePath)
 	if err != nil {
-		return fmt.Errorf("fs del: check if file is safe to access '%s': %w", path, err)
+		return fmt.Errorf("fs del: check if file is safe to access '%s': %w", filePath, err)
 	}
 	if !isSafe {
-		return fmt.Errorf("fs del file: unsafe path '%s': %w", path, errUnsafePath)
+		return fmt.Errorf("fs del file: unsafe filePath '%s': %w", filePath, errUnsafePath)
 	}
 
-	err = fs.backend.Remove(path)
+	err = fs.backend.Remove(filePath)
 	if err != nil {
-		return fmt.Errorf("fs file: can't remove '%s': %w", path, err)
+		return fmt.Errorf("fs file: can't remove '%s': %w", filePath, err)
 	}
 
 	return nil
@@ -388,7 +388,7 @@ func (fs FS) SearchNotes(query string) ([]File, error) {
 	query = strings.ToLower(strings.TrimSpace(query))
 	// Check for directory traversal attack
 	if strings.Contains(query, "/") {
-		return nil, nil
+		return nil, fmt.Errorf("search notes: unsafe query '%s': %w", query, errUnsafePath)
 	}
 
 	var supposedDir, search string
