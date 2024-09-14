@@ -13,17 +13,31 @@ install:
 check:
 	go fmt ./... && go vet ./... && go test ./...
 
+server:
+	ssh $(host) "\
+		# Path for user files storage \
+		mkdir -p /app/storage && \
+		# Path for server logs \
+		mkdir -p /var/log/files.md && \
+		# Path for server certificates \
+		mkdir -p /opt/files.md && \
+		chown -R www-data:www-data /app && \
+		chown -R www-data:www-data /var/log/files.md && \
+		chown -R www-data:www-data /opt/files.md && \
+		echo 'Directories created and permissions set successfully.' \
+	"
+
 deploy:
 	@GREEN='\e[32m'; \
 	YELLOW='\e[33m'; \
 	RESET='\e[0m'; \
 	printf "$${YELLOW}Building...$${RESET}\n" && \
 	make check && \
-	GOOS=linux GOARCH=amd64 go build -o bot ./cmd/bot && \
+	GOOS=linux GOARCH=amd64 go build -o /tmp/bot ./cmd/bot && \
 	printf "$${GREEN}Build Completed$${RESET}\n" && \
 	ssh $(host) "killall bot || true" && \
-	scp bot $(host):/app/bot && printf "$${GREEN}The binary is copied on the server$${RESET}\n" && \
-	rm bot && \
+	scp /tmp/bot $(host):/app/bot && printf "$${GREEN}The binary is copied on the server$${RESET}\n" && \
+	rm /tmp/pot && \
 	ssh $(host) "sudo setcap 'cap_net_bind_service=+ep' /app/bot" && \
 	ssh $(host) "su -c \"cd /app && nohup ./bot >> /app/out 2>>/app/err &\" -s /bin/sh www-data" && \
 	printf "$${GREEN}Successfully deployed!$${RESET}\n"

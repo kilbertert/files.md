@@ -71,7 +71,7 @@ func main() {
 
 	// Launch habits server if needed
 	if config.BotCfg.HabitsHost != "" {
-		go habitsServer(config.BotCfg.HabitsHost, config.BotCfg.HabitsCertsPath)
+		go habitsServer(config.BotCfg.HabitsHost, config.BotCfg.ServerCertPath)
 	}
 
 	infolog := slog.New(slog.NewTextHandler(os.Stdout, nil))

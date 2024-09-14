@@ -1,3 +1,5 @@
+// Provides a server for habits tracking functionality through Telegram miniapps.
+// SSLs certificates are handled automatically via LetsEncrypt.
 package main
 
 import (
