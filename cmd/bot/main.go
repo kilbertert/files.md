@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"path"
+	"path/filepath"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -97,7 +98,9 @@ func main() {
 			updJSON, _ = json.Marshal(upd)
 			infolog.Info("Bot update: ", "upd", string(updJSON))
 
-			userPath := path.Join(config.BotCfg.StorageDir, txt.I64(userID))
+			storagePath := config.BotCfg.StorageDir
+			storagePath, err = filepath.Abs(storagePath)
+			userPath := path.Join(storagePath, txt.I64(userID))
 			userFS, err := fs.NewFS(userPath, afero.NewOsFs())
 			if err != nil {
 				slog.Error("Bot error: can't create fs", "err", err)
