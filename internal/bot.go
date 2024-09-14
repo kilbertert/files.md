@@ -151,9 +151,8 @@ func (b *Bot) Answer(u UpdInterface) error {
 
 		handler, ok := b.handlers()[cmd.Name]
 		if !ok {
-			// An informative message, we can ignore that
-			_, _ = b.tg.Send(b.userID, i18n.Tr("I know nothing about this command 😕"), nil, tg.MarkupHTML)
-			return b.ShowToday(nil)
+			// It should be handled at cmd extraction step
+			return fmt.Errorf("no such command %s: %w", cmd.Name, errUnknownCommand)
 		}
 		slog.Debug("Command is called", "command", cmd.Name, "params", cmd.Params)
 		err = handler(cmd.Params)
@@ -258,6 +257,14 @@ func (b *Bot) handlers() map[string]func([]string) error {
 func (b *Bot) extractCmd(u UpdInterface) (*tg.Cmd, error) {
 	cmd := u.Cmd()
 	if cmd != nil {
+		// Check if the command is known
+		_, ok := b.handlers()[cmd.Name]
+		if !ok {
+			// An informative message, we can ignore that
+			_, _ = b.tg.Send(b.userID, i18n.Tr("I know nothing about this command 😕"), nil, tg.MarkupHTML)
+			return nil, nil
+		}
+
 		b.db.DelInputExpectation(b.userID)
 
 		return cmd, nil
