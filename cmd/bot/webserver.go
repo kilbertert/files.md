@@ -98,12 +98,12 @@ func habitsServer(habitsHost, certDir, logFilename string) {
 
 func setupRouter(router *http.ServeMux, logger *log.Logger) {
 	router.HandleFunc("/app/", func(w http.ResponseWriter, r *http.Request) {
-		//if r.URL.Path == "/app" || r.URL.Path == "/app/" {
-		//	http.ServeFile(w, r, "./editor/editor.html")
-		//	return
-		//}
-		fileServer := http.FileServer(http.Dir("./editor"))
-		router.Handle("/app/", http.StripPrefix("/app", fileServer))
+		if r.URL.Path == "/app" || r.URL.Path == "/app/" {
+			http.ServeFile(w, r, "./editor/editor.html")
+			return
+		}
+
+		http.StripPrefix("/app", http.FileServer(http.Dir("./editor"))).ServeHTTP(w, r)
 	})
 
 	// TODO add hashing or secrets
