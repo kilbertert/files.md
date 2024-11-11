@@ -101,7 +101,7 @@
     editor.on("change", async function (cm, changeObj) {
         // Save on user input only
         if (changeObj.origin && changeObj.origin !== "setValue") {
-            await saveFile(editor.currentFolder, editor.currentFile);
+            await saveFile();
             console.log(`Auto-saved ${editor.currentFile}`);
         }
     });
@@ -243,7 +243,7 @@
     }
 
     async function openRandomFile() {
-        const ignoredFolders = ["img", "archive", "_read_", "_watch_", "_shop_", "today", "later", "journal", "habits", "triggers", ""];
+        const ignoredFolders = ["img", "archive", "_read_", "_watch_", "_shop_", "today", "later", "journal", "habits", "triggers", "places", ""];
 
         const allFiles = [];
         for (let folder in zettel) {
@@ -276,10 +276,10 @@
         content = `# ${header}\n${content}`;
         content = content.replace(/\[\[(.+?)\|.*?\]\]/g, '[[$1]]');
 
-        editor.getDoc().setValue(content);
         editor.clearHistory();
         editor.currentFolder = folder;
         editor.currentFile = filename;
+        editor.getDoc().setValue(content);
         editor.focus();
     }
 
