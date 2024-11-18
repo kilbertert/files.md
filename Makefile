@@ -32,8 +32,9 @@ deploy: # systemd
 	make check && \
 	GOOS=linux GOARCH=amd64 go build -o /tmp/bot ./cmd/tgbot && \
 	printf "$${GREEN}Build Completed$${RESET}\n" && \
+	ssh root@$(host) "systemctl stop bot.service"
 	scp /tmp/bot $(host):/app/bot && printf "$${GREEN}The binary is copied on the server$${RESET}\n" && \
-	ssh $(host) "sudo systemctl restart bot.service" && \
+	ssh root@$(host) "systemctl start bot.service"
 	rm /tmp/bot && \
 	printf "$${GREEN}Successfully deployed!$${RESET}\n"
 
