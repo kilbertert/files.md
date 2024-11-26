@@ -13,7 +13,7 @@ install:
 check:
 	go fmt ./... && go vet ./... && go test ./...
 
-init_server:
+init_server: # create directories and configuration files on the service
 	ssh $(host) "\
 		mkdir -p /app/storage && \
 		mkdir -p /var/log/files.md && \
@@ -21,6 +21,11 @@ init_server:
 		chown -R www-data:www-data /app && \
 		chown -R www-data:www-data /var/log/files.md && \
 		chown -R www-data:www-data /opt/files.md && \
+		echo 'BOT_API_TOKEN=' > /app/.env && \
+		echo 'STORAGE_DIR=/app/storage' >> /app/.env && \
+		echo 'SERVER_CERT_DIR=/opt/files.md' >> /app/.env && \
+		echo 'SERVER_LOG_FILE=/var/log/files.md/server.log' >> /app/.env && \
+		chown www-data:www-data /app/.env && \
 		( \
 			echo '[Unit]' > /etc/systemd/system/bot.service && \
 			echo 'Description=Bot Service' >> /etc/systemd/system/bot.service && \
@@ -42,7 +47,7 @@ init_server:
 		echo 'Directories created and permissions set successfully.' \
 	"
 
-deploy: # systemd
+deploy: # deploy as systemd service
 	@GREEN='\e[32m'; \
 	YELLOW='\e[33m'; \
 	RESET='\e[0m'; \
@@ -55,7 +60,7 @@ deploy: # systemd
 	rm /tmp/bot && \
 	printf "$${GREEN}Successfully deployed!$${RESET}\n"
 
-deploy_binary:
+deploy_binary: # deploy as regular binary
 	@GREEN='\e[32m'; \
 	YELLOW='\e[33m'; \
 	RESET='\e[0m'; \
@@ -69,7 +74,6 @@ deploy_binary:
 	ssh $(host) "su -c \"cd /app && nohup ./bot >> /app/log 2>>/app/err &\" -s /bin/sh www-data" && \
 	rm /tmp/bot && \
 	printf "$${GREEN}Successfully deployed!$${RESET}\n"
-
 
 lint:
 	golangci-lint run
