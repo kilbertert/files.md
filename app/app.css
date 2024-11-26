@@ -255,3 +255,12 @@ a:hover {
     color: #4D978A !important;
 }
 
+.CodeMirror .cm-list-1,
+.CodeMirror .cm-list-2,
+.CodeMirror .cm-list-3 {
+    margin: 0 !important;
+}
+
+.CodeMirror .HyperMD-list-line {
+    padding-left: 0 !important;
+}
