@@ -13,3 +13,69 @@ files = {
         "Boredom is just an emotion.md": "It's not an indicator that you're doing something wrong in your life\n\nBefore we had phones and technologies we would just sit around the fire and we would talk and we wouldn't call that boring that was just life\n\nAnd bow we have that endless need for entertainment, anything when nothing is happening we think it's wrong and we need to fix it\n\nNon eventfulness is just a part of our life and you can embrace it as\npeace or you can frantically try to create more chaos\n\n[[happiness/Abundant mediation]]",
     },
 }
+
+async function openDirectory() {
+    let dirHandle = await window.showDirectoryPicker();
+    document.getElementById('welcome').style.display = 'none';
+    await saveDirectoryHandle(dirHandle);
+    await loadDirectory(dirHandle)
+    await showRandomFile();
+}
+
+async function loadDirectory(dirHandle, path = "", depth = 1) {
+    const entries = [];
+    for await (const entry of dirHandle.values()) {
+        entries.push(entry);
+    }
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+
+    for (const entry of entries) {
+        const filename = entry.name.normalize("NFC");
+        if (entry.kind === 'directory') {
+            if (filename.startsWith('.')) continue;
+
+            if (depth < 5) {
+                const dir = `${path}${filename}/`;
+                files[filename] = {};
+                await loadDirectory(entry, dir, depth + 1);
+            }
+        } else if (entry.kind === 'file' && allowedFileTypes.includes(filename.split('.').pop())) {
+            const dir = path.split('/').filter(Boolean).join('/');
+            if (!files[dir]) files[dir] = {};
+            let file = await entry.getFile();
+
+            files[dir][filename] = {handle: entry, lastModified: file.lastModified};
+            if (dir === 'img') {
+                files[dir][filename].imageUrl = await getImageUrl(entry)
+            }
+        }
+    }
+
+    // Remove empty dirs
+    for (const dir in files) {
+        if (Object.keys(files[dir]).length === 0) {
+            delete files[dir];
+        }
+    }
+    buildSidebar();
+}
+
+async function saveFile() {
+    const dir = editor.currentDir;
+    const filename = editor.currentFile;
+    const fileData = files[dir][filename];
+    if (fileData && fileData.handle) {
+        let content = editor.getValue();
+        const header = filename.replace('.md', '').replace(/^\w/, (c) => c.toUpperCase());
+        content = content.trimStart();
+        if (content.startsWith(`# ${header}`)) {
+            content = content.slice(`# ${header}`.length).trimStart();
+        }
+
+        const writable = await fileData.handle.createWritable();
+        await writable.write(content);
+        await writable.close();
+    } else {
+        alert(`Cannot save ${filename}. No file handle found.`);
+    }
+}

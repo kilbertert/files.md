@@ -227,51 +227,6 @@ function buildSidebar() {
     });
 }
 
-async function openDirectory() {
-    let dirHandle = await window.showDirectoryPicker();
-    document.getElementById('welcome').style.display = 'none';
-    await saveDirectoryHandle(dirHandle);
-    await loadDirectory(dirHandle)
-    await showRandomFile();
-}
-
-async function loadDirectory(dirHandle, path = "", depth = 1) {
-    const entries = [];
-    for await (const entry of dirHandle.values()) {
-        entries.push(entry);
-    }
-    entries.sort((a, b) => a.name.localeCompare(b.name));
-
-    for (const entry of entries) {
-        const filename = entry.name.normalize("NFC");
-        if (entry.kind === 'directory') {
-            if (filename.startsWith('.')) continue;
-
-            if (depth < 5) {
-                const dir = `${path}${filename}/`;
-                files[filename] = {};
-                await loadDirectory(entry, dir, depth + 1);
-            }
-        } else if (entry.kind === 'file' && allowedFileTypes.includes(filename.split('.').pop())) {
-            const dir = path.split('/').filter(Boolean).join('/');
-            if (!files[dir]) files[dir] = {};
-            let file = await entry.getFile();
-
-            files[dir][filename] = {handle: entry, lastModified: file.lastModified};
-            if (dir === 'img') {
-                files[dir][filename].imageUrl = await getImageUrl(entry)
-            }
-        }
-    }
-
-    // Remove empty dirs
-    for (const dir in files) {
-        if (Object.keys(files[dir]).length === 0) {
-            delete files[dir];
-        }
-    }
-    buildSidebar();
-}
 
 async function showRandomFile() {
     const allFiles = [];
@@ -333,58 +288,6 @@ async function showFile(dir, filename, saveToHistory = true) {
         // TODO only focus if there's no quick dialogue
         editor.focus();
     }, 100);
-}
-
-async function saveFile() {
-    const dir = editor.currentDir;
-    const filename = editor.currentFile;
-    const fileData = files[dir][filename];
-    if (fileData && fileData.handle) {
-        let content = editor.getValue();
-        const header = filename.replace('.md', '').replace(/^\w/, (c) => c.toUpperCase());
-        content = content.trimStart();
-        if (content.startsWith(`# ${header}`)) {
-            content = content.slice(`# ${header}`.length).trimStart();
-        }
-
-        const writable = await fileData.handle.createWritable();
-        await writable.write(content);
-        await writable.close();
-    } else {
-        alert(`Cannot save ${filename}. No file handle found.`);
-    }
-}
-
-function initDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('files', 1);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-        request.onupgradeneeded = () => {
-            const db = request.result;
-            if (!db.objectStoreNames.contains('handles')) {
-                db.createObjectStore('handles');
-            }
-        };
-    });
-}
-
-async function saveDirectoryHandle(directoryHandle) {
-    const db = await initDB();
-    const transaction = db.transaction('handles', 'readwrite');
-    const store = transaction.objectStore('handles');
-    await store.put(directoryHandle, 'savedDirectoryHandle');
-}
-
-async function getSavedDirectoryHandle() {
-    const db = await initDB();
-    return new Promise((resolve, reject) => {
-        const transaction = db.transaction('handles', 'readonly');
-        const store = transaction.objectStore('handles');
-        const request = store.get('savedDirectoryHandle');
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
 }
 
 async function init(el) {
