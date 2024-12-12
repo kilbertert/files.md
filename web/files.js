@@ -18,12 +18,12 @@ async function openDirectory() {
     let dirHandle = await window.showDirectoryPicker();
     document.getElementById('welcome').style.display = 'none';
     await saveDirectoryHandle(dirHandle);
-    await loadDirectory(dirHandle)
+    await loadFiles(dirHandle)
     buildSidebar();
     await showRandomFile();
 }
 
-async function loadDirectory(dirHandle, path = "", depth = 1) {
+async function loadFiles(dirHandle, path = "", depth = 1) {
     const entries = [];
     for await (const entry of dirHandle.values()) {
         entries.push(entry);
@@ -38,11 +38,11 @@ async function loadDirectory(dirHandle, path = "", depth = 1) {
             if (depth < 5) {
                 const dir = `${path}${filename}/`;
                 files[filename] = {};
-                await loadDirectory(entry, dir, depth + 1);
+                await loadFiles(entry, dir, depth + 1);
                 buildSidebar();
             }
         } else if (entry.kind === 'file' && allowedFileTypes.includes(filename.split('.').pop())) {
-            const dir = path.split('/').filter(Boolean).join('/');
+            const dir = path.replace(/\/+$/, '');
             if (!files[dir]) files[dir] = {};
             let file = await entry.getFile();
 
