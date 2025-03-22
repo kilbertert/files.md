@@ -14,8 +14,8 @@ import (
 
 // Configuration
 const (
-	StorageDir = "/app/mystorage"           // Base directory for markdown storage
-	AuthToken  = "your-really-secret-token" // Replace with your actual token or get from environment
+	StorageDir = "/app/mystorage"             // Base directory for markdown storage
+	AuthToken  = "your-really-secret-token-2" // Replace with your actual token or get from environment
 )
 
 // FileInfo represents metadata about a file with Unix timestamp
