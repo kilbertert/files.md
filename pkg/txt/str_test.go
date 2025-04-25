@@ -174,8 +174,8 @@ func TestNormNewLines(t *testing.T) {
 		// Test Case 1: Windows-style line endings
 		{input: "Hello\r\nWorld", expectedOutput: "Hello\nWorld"},
 
-		// Test Case 2: Mixed line endings
-		{input: "Line1\n\rLine2\r\nLine3", expectedOutput: "Line1\nLine2\nLine3"},
+		// Test Case 2: Mac OS line endings
+		{input: "Line1\rLine2\nLine3", expectedOutput: "Line1\nLine2\nLine3"},
 
 		// Test Case 3: Unix-style line endings (no change expected)
 		{input: "This\nis\na\ntest", expectedOutput: "This\nis\na\ntest"},
