@@ -114,17 +114,18 @@ async function syncWithServer() {
                 }
             }
 
-            // const fileHandle = await currentDirHandle.getFileHandle(filename, { create: true });
-            // console.log(fileHandle);
-            // const writable = await fileHandle.createWritable();
-            // await writable.write(content);
-            // await writable.close();
-            // if (!filesMetadata['files'][dir]) filesMetadata['files'][dir] = {};
-            // filesMetadata['files'][dir][filename] = {
-            //     hash: hash(content),
-            //     lastModified: lastModified,
-            //     path: path
-            // };
+            console.log("Syncing " +filename);
+            const fileHandle = await currentDirHandle.getFileHandle(filename, { create: true });
+            console.log(fileHandle);
+            const writable = await fileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            if (!filesMetadata['files'][dir]) filesMetadata['files'][dir] = {};
+            filesMetadata['files'][dir][filename] = {
+                hash: hash(content),
+                lastModified: lastModified,
+                path: path
+            };
         }
         filesMetadata['timestamps'] = server.timestamps;
 
