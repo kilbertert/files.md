@@ -103,6 +103,7 @@ async function syncWithServer() {
                 // await writable.close();
             }
 
+            // TODO for first sync, when we have all the files - we should not rewrite them
             // TODO if file was modified locally, we need to re-read it before writing.
             const dirs = path.split('/');
             dirs.pop() // remove filename
@@ -113,17 +114,17 @@ async function syncWithServer() {
                 }
             }
 
-            const fileHandle = await currentDirHandle.getFileHandle(filename, { create: true });
-            console.log(fileHandle);
-            const writable = await fileHandle.createWritable();
-            await writable.write(content);
-            await writable.close();
-            if (!filesMetadata['files'][dir]) filesMetadata['files'][dir] = {};
-            filesMetadata['files'][dir][filename] = {
-                hash: hash(content),
-                lastModified: lastModified,
-                path: path
-            };
+            // const fileHandle = await currentDirHandle.getFileHandle(filename, { create: true });
+            // console.log(fileHandle);
+            // const writable = await fileHandle.createWritable();
+            // await writable.write(content);
+            // await writable.close();
+            // if (!filesMetadata['files'][dir]) filesMetadata['files'][dir] = {};
+            // filesMetadata['files'][dir][filename] = {
+            //     hash: hash(content),
+            //     lastModified: lastModified,
+            //     path: path
+            // };
         }
         filesMetadata['timestamps'] = server.timestamps;
 
