@@ -25,7 +25,7 @@ type File struct {
 	Path         string `json:"path"`
 	LastModified int64  `json:"lastModified"`
 	IsDir        bool   `json:"isDir"`
-	Content      string `json:"content,omitempty"`
+	Content      string `json:"content"`
 }
 
 type syncRequest struct {

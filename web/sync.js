@@ -12,12 +12,14 @@ function saveFilesMetadata() {
     localStorage.setItem(SYNC_STORAGE_KEY, JSON.stringify(filesMetadata));
 }
 
-async function calculateFileHash(content) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(content);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+function hash(str) {
+    let hash = 0;
+    for (let i = 0, len = str.length; i < len; i++) {
+        let chr = str.charCodeAt(i);
+        hash = (hash << 5) - hash + chr;
+        hash |= 0;
+    }
+    return hash;
 }
 
 async function syncWithServer() {
@@ -36,11 +38,17 @@ async function syncWithServer() {
                     const file = await files[dir][filename].handle.getFile();
                     content = await file.text();
                 } else {
-                    content = files[dir][filename].content;
+                    content = files[dir][filename]?.content || "";
                 }
 
-                const hash = await calculateFileHash(content);
-                filesToSync[dir][filename] = { hash, lastModified: files[dir][filename].lastModified };
+                let serverHash = filesMetadata?.files?.[dir]?.[filename]?.hash;
+                let fileWasModifiedLocally = serverHash !== hash(content)
+                if (fileWasModifiedLocally) {
+                    filesToSync[dir][filename] = {
+                        content: content,
+                        lastModified: files[dir][filename].lastModified
+                    };
+                }
             } catch (error) {
                 console.error(`Error processing ${dir}/${filename}:`, error);
             }
@@ -53,7 +61,7 @@ async function syncWithServer() {
             headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')},
             body: JSON.stringify({
                 files: filesToSync,
-                timestamps: filesMetadata['timestamps'] || {},
+                timestamps: filesMetadata['timestamps'] || [],
             })
         });
 
@@ -64,7 +72,8 @@ async function syncWithServer() {
         const server = await response.json();
         for (const fileInfo of server.files) {
             console.log(`Syncing file: ${fileInfo.path}`);
-            const { path, content, lastModified } = fileInfo;
+            const { path, content, lastModified, isDir } = fileInfo;
+            if (isDir) continue;
 
             let dir, filename;
             if (path.includes('/')) {
@@ -75,8 +84,6 @@ async function syncWithServer() {
                 dir = '';
                 filename = path;
             }
-
-            const hash = await calculateFileHash(content);
 
             if (!files[dir]) files[dir] = {};
 
@@ -95,7 +102,7 @@ async function syncWithServer() {
 
             if (!filesMetadata['files'][dir]) filesMetadata['files'][dir] = {};
             filesMetadata['files'][dir][filename] = {
-                hash: hash,
+                hash: hash(content),
                 lastModified: lastModified
             };
         }
