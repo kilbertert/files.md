@@ -110,7 +110,7 @@ async function loadLocalFiles(rootDirHandle) {
     return newFiles;
 }
 
-async function syncWithServer() {
+async function syncAllWithServer() {
     const startTime = performance.now();
     console.log("Starting sync with server...");
 
@@ -186,6 +186,7 @@ async function syncFileWithServer(dir, filename) {
     }
     console.log(serverFile);
     await write(path, serverFile.content);
+
     await showFile(dir, filename);
     console.log("File synced with server");
 }
@@ -277,6 +278,23 @@ async function getFileHandle(path) {
     return fileHandle;
 }
 
+async function isContentEqual(path, content) {
+    let fileHandle = await getFileHandle(path);
+    if (fileHandle === null) {
+        // TODO fix once Chromium fixes the bug
+        console.log("Malformed name, skipping file...");
+        return false;
+    }
+
+    let file = await fileHandle.getFile()
+    let clientHash = hash(normNewLines(await file.text()));
+    let serverHash = hash(normNewLines(content));
+    if (clientHash !== serverHash) {
+        return false;
+    } else {
+        return true;
+    }
+}
 async function write(path, content) {
     let fileHandle = await getFileHandle(path);
     if (fileHandle === null) {
@@ -285,10 +303,7 @@ async function write(path, content) {
         return;
     }
 
-    let file = await fileHandle.getFile()
-    let clientHash = hash(await file.text());
-    let serverHash = hash(content);
-    if (clientHash !== serverHash) {
+    if (await isContentEqual(path, content)) {
         console.log("Hashes do not match, writing file...");
         // TODO rem
         const writable = await fileHandle.createWritable();
@@ -381,7 +396,7 @@ async function initFiles() {
     const startTime = performance.now();
     files = await loadLocalFiles(rootDirHandle);
     console.log(`Files loaded in ${performance.now() - startTime}ms`);
-    await syncWithServer();
+    await syncAllWithServer();
 
     // Refresh current file
     window.loader = setInterval(async function () {
