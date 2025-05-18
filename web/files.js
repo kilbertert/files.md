@@ -251,7 +251,7 @@ async function syncMediaFilesFromServer() {
 
                 const blob = await response.blob();
                 console.log(path, blob);
-                await saveMediaFile(path, blob);
+                await saveMediaFile(`img/${path}`, blob);
                 // setMetadata(path, null, lastModified);
                 filesProcessed++;
             } catch (error) {
