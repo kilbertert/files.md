@@ -1,8 +1,8 @@
 tgbot:
 	go run ./cmd/tgbot
 
-bot:
-	cd ./cmd/bot && wails dev
+chat:
+	cd ./cmd/chat && wails dev
 
 test:
 	go test ./...
