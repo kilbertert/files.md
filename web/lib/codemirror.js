@@ -3328,7 +3328,9 @@
           let lastVisualLine = getVisualLines(cm, lastLine).pop();
           let lastLineLeft = wrapXObj(cm, lineObj, lastVisualLine.endChar, dir, "after");
           drawRect(lastLineLeft, toPos.top, toPos.right - lastLineLeft, toPos.bottom);
-          
+
+          // Above we implemented character-based selection highlighting.
+          // Before it was like that, full-width highlighting:
           // add(topLeft, fromPos.top, topRight - topLeft, fromPos.bottom);
           // if (fromPos.bottom < toPos.top) { add(leftSide, fromPos.bottom, null, toPos.top); }
           // add(botLeft, toPos.top, botRight - botLeft, toPos.bottom);
@@ -3383,6 +3385,9 @@
         }
       }
     }
+
+    // Above we implemented character-based selection highlighting.
+    // Before it was like that, full-width highlighting:
     // if (sFrom.line == sTo.line) {
     //   drawForLine(sFrom.line, sFrom.ch, sTo.ch);
     // } else {

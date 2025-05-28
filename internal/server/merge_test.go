@@ -11,8 +11,8 @@ func TestMergePrefixCases(t *testing.T) {
 
 	original := "line 1\nline 2"
 	modified := "line 1\nline 2\nline 3\nline 4"
-	r.Equal(modified, Merge(original, modified), "Should keep longer string when one is prefix")
-	r.Equal(modified, Merge(modified, original), "Should keep longer string when one is prefix")
+	r.Equal(modified, Merge(original, modified))
+	r.Equal(modified, Merge(modified, original))
 }
 
 func TestMergeCommonPrefixDifferentSuffixes(t *testing.T) {
@@ -22,7 +22,7 @@ func TestMergeCommonPrefixDifferentSuffixes(t *testing.T) {
 	original := "line 1\nline 2\nline 3\nline original 4"
 	modified := "line 1\nline 2\nline 3\nline modified 4"
 	merged := Merge(original, modified)
-	r.Equal("line 1\nline 2\nline 3\nline original 4\nline modified 4", merged, "Should merge lines after common prefix")
+	r.Equal("line 1\nline 2\nline 3\nline original 4\nline modified 4", merged)
 }
 
 func TestMergeDifferentPrefixCommonSuffix(t *testing.T) {
@@ -39,10 +39,17 @@ func TestMergeDivergentBody(t *testing.T) {
 	r := require.New(t)
 
 	// Divergent content with common prefix and suffix
-	original := "header\noriginal A\noriginal B\nfooter"
-	modified := "header\nmodified X\nmodified Y\nfooter"
+	original := "header\nheader\noriginal A\noriginal B\nfooter\nfooter"
+	modified := "header\nheader\nmodified X\nmodified Y\nfooter\nfooter"
 	merged := Merge(original, modified)
-	r.Equal("header\noriginal A\noriginal B\nmodified X\nmodified Y\nfooter", merged)
+	r.Equal("header\nheader\noriginal A\noriginal B\nmodified X\nmodified Y\nfooter\nfooter", merged)
+}
+
+func TestMergeSameHeader(t *testing.T) {
+	r := require.New(t)
+
+	result := Merge("#### 23 May, Saturday", "#### 23 May, Saturday")
+	r.Equal("#### 23 May, Saturday", result)
 }
 
 func TestMergeDivergentContent(t *testing.T) {
@@ -93,30 +100,34 @@ func TestMergeHeaders(t *testing.T) {
 	r := require.New(t)
 
 	headers := []string{"#### 23 May, Friday 🤸‍🍽💪💧", "#### 23 May, Friday 🤸‍🍽💪", "#### 23 May, Friday 🤸‍"}
-	merged := mergeHeaders(headers)
+	merged := mergeEmojisInJournalHeaders(headers)
 	r.Equal([]string{"#### 23 May, Friday 🤸‍🍽💪💧"}, merged)
 }
 
 func TestMergeHeadersReversed(t *testing.T) {
 	r := require.New(t)
 
-	headers := []string{"#### 23 May, Friday 🤸‍", "#### 23 May, Friday 🤸‍🍽💪", "#### 23 May, Friday 🤸‍🍽💪💧"}
-	merged := mergeHeaders(headers)
-	r.Equal([]string{"#### 23 May, Friday 🤸‍🍽💪💧"}, merged)
+	headers := []string{"#### 23 May, Friday 🤸‍♂️", "#### 23 May, Friday 🤸‍♂️🍽💪", "#### 23 May, Friday 🤸‍♂️🍽💪💧"}
+	merged := mergeEmojisInJournalHeaders(headers)
+	r.Equal([]string{"#### 23 May, Friday 🤸‍♂️🍽💪💧"}, merged)
 }
 
 func TestMergeHeadersWithDifferentEmojis(t *testing.T) {
 	r := require.New(t)
 
-	headers := []string{"#### 23 May, Friday 🤸‍🍽💪💧", "#### 23 May, Friday 🤸‍🍽💪📵"}
-	merged := mergeHeaders(headers)
-	r.Equal([]string{"#### 23 May, Friday 🤸‍🍽💪💧📵"}, merged)
+	headers := []string{"#### 23 May, Friday 🤸‍🍽💪💧", "#### 23 May, Friday 🤸‍🍽💪📵🚶‍♂️"}
+	merged := mergeEmojisInJournalHeaders(headers)
+	r.Equal([]string{"#### 23 May, Friday 🤸‍🍽💪💧📵🚶‍♂️"}, merged)
 }
 
 func TestMergeHeadersNoEmoji(t *testing.T) {
 	r := require.New(t)
 
 	headers := []string{"#### 23 May, Friday", "#### 23 May, Friday 💪"}
-	merged := mergeHeaders(headers)
+	merged := mergeEmojisInJournalHeaders(headers)
 	r.Equal([]string{"#### 23 May, Friday 💪"}, merged)
+
+	headers = []string{"#### 23 May, Saturday", "#### 23 May, Saturday"}
+	merged = mergeEmojisInJournalHeaders(headers)
+	r.Equal([]string{"#### 23 May, Saturday"}, merged)
 }

@@ -2,14 +2,17 @@ package server
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
+
+	"github.com/rivo/uniseg"
 )
 
 // Merge combines two strings (s1 and s2) by identifying longest sequences of common lines.
 //
 // The algorithm:
 // 1) Splits both inputs into lines
-// 2) Uses dynamic programming to find the longest common subsequence (LCS) between the lines
+// 2) Uses dynamic programming to find the longest common subsequence (LCS) between every two lines
 // 3) Constructs a merged result that preserves all unique content from both strings
 // 4) Maintains the original order of content from both strings
 func Merge(s1, s2 string) string {
@@ -41,7 +44,7 @@ func Merge(s1, s2 string) string {
 
 	// Build the merged result.
 	result := backtrack(lines1, lines2, lcsLength, len(lines1), len(lines2))
-	result = mergeHeaders(result)
+	result = mergeEmojisInJournalHeaders(result)
 
 	return strings.Join(result, "\n")
 }
@@ -80,39 +83,71 @@ func backtrack(lines1, lines2 []string, lcsLength [][]int, i, j int) []string {
 // #### 23 May, Friday 🤸‍🍽
 // #### 23 May, Friday 🤸‍🍽💪
 // #### 23 May, Friday 🤸‍🍽💪💧
-func mergeHeaders(lines []string) []string {
-	var result []string
+// #### 23 May, Friday 🤸‍🍽💪💧🚶‍♂️
+func mergeEmojisInJournalHeaders(lines []string) []string {
+	var mergedLines []string
 
-	for i := 0; i < len(lines); i++ {
-		if !strings.HasPrefix(lines[i], "####") {
-			result = append(result, lines[i])
+	groups := groupConsecutiveHeaders(lines)
+	for _, group := range groups {
+		if len(group) == 1 {
+			mergedLines = append(mergedLines, group[0])
 			continue
 		}
 
-		// Find where emojis start
-		split := strings.LastIndex(lines[i], " ")
-		base := lines[i][:split+1]
-		chars := lines[i][split+1:]
-
-		// Collect chars from similar headers
-		for j := i + 1; j < len(lines) && strings.HasPrefix(lines[j], base); j++ {
-			chars += lines[j][split+1:]
-			i = j
-		}
-
-		// Unique chars
-		seen := map[rune]bool{}
-		var unique strings.Builder
-		for _, r := range chars {
-			if !seen[r] {
-				seen[r] = true
-				fmt.Println(string(r))
-				unique.WriteRune(r)
+		foundEmojis := ""
+		possibleEmojis := regexp.MustCompile(`[^\w\s\p{P}]+$`)
+		date := strings.TrimSpace(possibleEmojis.ReplaceAllString(group[0], ""))
+		for _, line := range group {
+			// If at least one line from group doesn't start with the same date, we can't merge them.
+			if !strings.HasPrefix(line, date) {
+				mergedLines = append(mergedLines, group...)
+				break
 			}
+
+			foundEmojis += possibleEmojis.FindString(line)
 		}
 
-		result = append(result, base+unique.String())
+		if foundEmojis != "" {
+			foundEmojis = " " + unique(foundEmojis)
+		}
+		mergedLines = append(mergedLines, date+foundEmojis)
 	}
 
-	return result
+	return mergedLines
+}
+
+func groupConsecutiveHeaders(lines []string) [][]string {
+	var groups [][]string
+	for i := 0; i < len(lines); i++ {
+		if strings.HasPrefix(lines[i], "####") {
+			group := []string{lines[i]}
+			i++
+			// Collect all consecutive headers
+			for i < len(lines) && strings.HasPrefix(lines[i], "####") {
+				group = append(group, lines[i])
+				i++
+			}
+			groups = append(groups, group)
+		} else {
+			groups = append(groups, []string{lines[i]})
+		}
+	}
+
+	return groups
+}
+
+// unique returns a string containing unique unicode graphemes from both input strings.
+// The order is preserved.
+func unique(s string) string {
+	var uniq string
+	graphemes := uniseg.NewGraphemes(s)
+	for graphemes.Next() {
+		g := graphemes.Str()
+		fmt.Println(g)
+		if !strings.Contains(uniq, g) {
+			uniq += g
+		}
+	}
+
+	return uniq
 }
