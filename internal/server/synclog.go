@@ -35,14 +35,10 @@ func LogRename(oldPath, newPath string) {
 	}
 	defer file.Close()
 
-	record := fmt.Sprintf("%d %s %s\n", entry.Timestamp, url.QueryEscape(entry.OldPath), url.QueryEscape(entry.NewPath))
+	oldPath = url.QueryEscape(entry.OldPath)
+	newPath = url.QueryEscape(entry.NewPath)
+	record := fmt.Sprintf("%d %s %s\n", entry.Timestamp, oldPath, newPath)
 
-	_, err = file.WriteString(record)
-	if err != nil {
-
-	}
-	err = file.Sync()
-	if err != nil {
-
-	}
+	file.WriteString(record)
+	file.Sync()
 }
