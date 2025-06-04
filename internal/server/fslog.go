@@ -12,19 +12,7 @@ import (
 
 var lock sync.RWMutex
 
-type LogEntry struct {
-	Timestamp int64
-	OldPath   string
-	NewPath   string
-}
-
 func LogRename(time int64, oldPath, newPath string) {
-	entry := LogEntry{
-		Timestamp: time,
-		OldPath:   oldPath,
-		NewPath:   newPath,
-	}
-
 	lock.Lock()
 	defer lock.Unlock()
 
@@ -34,9 +22,9 @@ func LogRename(time int64, oldPath, newPath string) {
 	}
 	defer file.Close()
 
-	oldPath = url.QueryEscape(entry.OldPath)
-	newPath = url.QueryEscape(entry.NewPath)
-	record := fmt.Sprintf("%d %s %s\n", entry.Timestamp, oldPath, newPath)
+	oldPath = url.QueryEscape(oldPath)
+	newPath = url.QueryEscape(newPath)
+	record := fmt.Sprintf("%d %s %s\n", time, oldPath, newPath)
 
 	file.WriteString(record)
 	file.Sync()
