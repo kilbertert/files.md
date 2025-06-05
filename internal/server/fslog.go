@@ -38,6 +38,7 @@ func ReadLog(userID, afterTimestamp int64) map[string]string {
 	lock.RLock()
 	defer lock.RUnlock()
 
+	// TODO can we tolerate errors? The worst that happens are duplicates on client side
 	file, err := os.Open(path.Join(config.BotCfg.WorkingDir, "fslog"))
 	if err != nil {
 		return nil
@@ -55,6 +56,16 @@ func ReadLog(userID, afterTimestamp int64) map[string]string {
 		if err != nil || n != 3 || timestamp < afterTimestamp {
 			continue
 		}
+		oldPath, err = url.QueryUnescape(oldPath)
+		if err != nil {
+			continue
+		}
+		newPath, err = url.QueryUnescape(newPath)
+		if err != nil {
+			continue
+		}
+
+		// TODO exclude ../ from log to prevent Path Traversal attack
 
 		if !strings.HasPrefix(oldPath, userPathPrefix) || !strings.HasPrefix(newPath, userPathPrefix) {
 			continue
