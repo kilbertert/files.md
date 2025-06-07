@@ -43,7 +43,7 @@
 
       let cursor = cm.getCursor(), line = cm.getLine(cursor.line);
       // CHANGED don't mixup with checkboxse
-      if (/^\s*-\s/.test(line)) {
+      if (/^\s*-\s\[\s/.test(line)) {
         hidePreview()
         return null
       }
