@@ -56,10 +56,6 @@ let defaultFiles = {
                 "#### Inline Code\n" +
                 "Use `console.log()` for debugging.\n" +
                 "\n" +
-                "#### Blockquotes\n" +
-                "\n" +
-                ">This is a blockquote. It can span multiple lines and is great for highlighting important information or quotes from other sources.\n" +
-                "\n" +
                 "#### Tables\n" +
                 "| Title | Main Character |\n" +
                 "| ------- | --------------- |\n" +

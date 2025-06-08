@@ -270,6 +270,7 @@ async function openFile(dir, filename, saveToHistory = true) {
     // Check if we're loading the same file and save cursor position
     let cursorPos = null;
     if (editor.currentDir === dir && editor.currentFile === filename) {
+        console.log('saving cursor');
         cursorPos = editor.getCursor();
     }
 
@@ -292,10 +293,10 @@ async function openFile(dir, filename, saveToHistory = true) {
         history.pushState(state, '');
     }
 
-    editor.getDoc().setValue(content);
+    editor.swapDoc(new CodeMirror.Doc(content, "hypermd"));
     editor.clearHistory();
     editor.markClean();
-    editor.focus();
+    // editor.focus();
 
     if (cursorPos !== null) {
         console.log('cursor not null');
@@ -310,8 +311,11 @@ async function openFile(dir, filename, saveToHistory = true) {
         const cmScroller = document.querySelector('.CodeMirror-scroll')
         const hasVerticalScroll = cmScroller.scrollHeight > cmScroller.clientHeight
         if (hasVerticalScroll) {
+            console.log('has vertical line');
+            focusLastLine();
             return;
         }
+        console.log('trying to focus last line');
 
         // Set cursor at the end of the page.
         // We need to execute this code after some rendering loop. If we don't do that,
@@ -331,13 +335,14 @@ function focusLastLine() {
         const lineContent = editor.getLine(i).trim();
         if (!lineContent.startsWith("[") && (!lineContent.endsWith("]") || !lineContent.endsWith(")"))) {
             targetLine = i;
+            console.log('found links');
             break;
         }
     }
     const targetChar = editor.getLine(targetLine).length;
     editor.setCursor({line: targetLine, ch: targetChar});
-    // Why doing scroll to 0 line?
-    // editor.scrollTo(null, 0);
+    // Cursor at the end, but scroll the doc to top
+    editor.scrollTo(null, 0);
     // TODO only focus if there's no quick dialogue
     console.log('focusing last line');
     editor.focus();
