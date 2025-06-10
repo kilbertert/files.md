@@ -40,17 +40,28 @@
 
 <div id="sidebar">
     <div id="sidebar-toolbar">
-        <button id="new-file" title="New file" onclick="newFile()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
+            <svg id="new-file" title="New file" onclick="newFile()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
                 <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 25V7M7 16h18"/>
             </svg>
-        </button>
-        <button id="new-folder" title="New folder">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">
-                <path stroke="#535358" stroke-linecap="round" stroke-width="2" d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z"/>
-                <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-8M12 17h8"/>
-            </svg>
-        </button>
+<!--        <button id="move-file" title="Move file" onclick="openMoveModal()">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 32 32">-->
+<!--                <path stroke="#535358" stroke-linecap="round" stroke-width="2" d="M5 16h21"/>-->
+<!--                <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 8l8 8-8 8"/>-->
+<!--            </svg>-->
+<!--        </button>-->
+<!--        <button id="remove-file" title="Delete file" onclick="removeFile(toPath(editor.currentDir, editor.currentFile))">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 32 32">-->
+<!--                <ellipse cx="16" cy="8" stroke="#535358" stroke-linejoin="round" stroke-width="2" rx="11" ry="3"/>-->
+<!--                <path stroke="#535358" stroke-linejoin="round" stroke-width="2" d="M5 8l3 18s1 2 8 2 8-2 8-2l3-18"/>-->
+<!--                <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 16.5l-5 5M13.5 16.5l5 5"/>-->
+<!--            </svg>-->
+<!--        </button>-->
+<!--        <button id="new-folder" title="New folder">-->
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32">-->
+<!--                <path stroke="#535358" stroke-linecap="round" stroke-width="2" d="M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z"/>-->
+<!--                <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-8M12 17h8"/>-->
+<!--            </svg>-->
+<!--        </button>-->
         <button id="open-folder" title="Select local folder" onClick="openDir()">
             Open or create folder
         </button>
