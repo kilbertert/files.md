@@ -52,6 +52,9 @@ function attachKeyboard(buttons) {
                 button.innerText = btn.Name;
                 button.classList.add('telegram-button'); // Add a class for styling
                 button.onclick = async () => {
+                    if (btn.Cmd.t === "iq") {
+                        return;
+                    }
                     // let update = await window.newUpdate('', btn.Cmd)
                     // processResponse(await window.send(update));
                     replyCmd(JSON.stringify(btn.Cmd))
@@ -60,6 +63,9 @@ function attachKeyboard(buttons) {
             });
             buttonContainer.appendChild(rowContainer);
         } else {
+            if (row.Cmd.t === "iq") {
+                return;
+            }
             const button = document.createElement('button');
             button.innerText = row.Name;
             button.classList.add('telegram-button'); // Add a class for styling
