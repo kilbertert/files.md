@@ -168,6 +168,7 @@ async function syncTextsWithServer() {
 
     try {
         // Write files received from the server
+        let failedAtLeastOnce = false;
         for (const fileInfo of server.files) {
             const {path, content, lastModified} = fileInfo;
             // If it is current file, skip, because we sync it separately
@@ -190,10 +191,14 @@ async function syncTextsWithServer() {
                 saveMetadata();
             } catch (error) {
                 console.error(`Error saving file ${path}:`, error);
+                failedAtLeastOnce = true;
             }
         }
-        serverFiles['timestamps'] = server.timestamps;
-        saveMetadata();
+        // Only move timestamp pointers when we were able to sync all the files.
+        if (!failedAtLeastOnce) {
+            serverFiles['timestamps'] = server.timestamps;
+            saveMetadata();
+        }
     } catch (error) {
         console.error("Can't sync: ", error.message)
     }
