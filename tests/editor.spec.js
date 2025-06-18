@@ -60,5 +60,62 @@ test.describe('Files.md Text Editor Sync Tests', () => {
         // await page.pause()
     });
 
+    test('should handle text selection correctly', async ({page}) => {
+        // Add some test content with various markdown elements
+        await page.click('.CodeMirror');
+        await page.keyboard.press('Control+a');
+        await page.keyboard.press('Delete');
+
+        const testContent = `# Heading
+**Bold text** and normal text
+\`inline code\` with more text
+[Link text](url)`;
+
+        await page.keyboard.type(testContent);
+        await page.waitForTimeout(500);
+
+        // Test 1: Select all text
+        await page.keyboard.press('Control+a');
+        await page.waitForTimeout(200);
+
+        // Check if selection div is created with proper positioning
+        const allSelections = page.locator('.CodeMirror-selected');
+        let count = await allSelections.count();
+        expect(count).toEqual(4);
+
+        for (let i = 0; i < count; i++) {
+            const selection = allSelections.nth(i);
+
+            const selectionData = await selection.evaluate(el => {
+                const style = window.getComputedStyle(el);
+                const left = parseInt(style.left);
+                const width = parseInt(style.width);
+                return {
+                    left: left,
+                    width: width,
+                    right: left + width
+                };
+            });
+
+            console.log(selectionData);
+            if (i === 0) {
+                expect(selectionData.left).toBe(2);
+                expect(selectionData.width).toBe(143);
+                expect(selectionData.right).toBe(145);
+            } else if (i === 1) {
+                expect(selectionData.left).toBe(2);
+                expect(selectionData.width).toBe(90);
+                expect(selectionData.right).toBe(92);
+            } else if (i === 2) {
+                expect(selectionData.left).toBe(2);
+                expect(selectionData.width).toBe(196);
+                expect(selectionData.right).toBe(198);
+            } else if (i === 3) {
+                expect(selectionData.left).toBe(2);
+                expect(selectionData.width).toBe(229);
+                expect(selectionData.right).toBe(231);
+            }
+        }
+    });
 });
 
