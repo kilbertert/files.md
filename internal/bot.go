@@ -403,12 +403,12 @@ func (b *Bot) saveFromTextMsg(u Update) error {
 	//	return b.moveToJournal([]string{fs.Hash(filename)})
 	//}
 
-	err := b.saveToChat(msg, b.cfg.Timezone())
+	index, err := b.saveToChat(msg, b.cfg.Timezone())
 	if err != nil {
 		return fmt.Errorf("save to chat: %w", err)
 	}
 
-	return b.showMoveTo([]string{fs.Hash(fs.ChatFilename)})
+	return b.showMoveTo([]string{strconv.Itoa(index)})
 }
 
 // TODO test collapsing from both regular messages and images
@@ -654,55 +654,6 @@ func (b *Bot) createOrAdd(dir, filename, content string) error {
 
 	if err := b.fs.Write(dir, filename, content); err != nil {
 		return fmt.Errorf("create: %w", err)
-	}
-
-	return nil
-}
-
-func (b *Bot) saveToChat(content string, timezone *time.Location) error {
-	exists, err := b.fs.Exists(fs.DirRoot, fs.ChatFilename)
-	if err != nil {
-		return fmt.Errorf("saveToChat: %w", err)
-	}
-
-	content = strings.TrimSpace(content)
-
-	var md string
-	if exists {
-		md, err = b.fs.Read(fs.DirRoot, fs.ChatFilename)
-		if err != nil {
-			return fmt.Errorf("saveToChat: %w", err)
-		}
-		md = txt.NormNewLines(md)
-		md = strings.TrimSpace(md)
-		if len(md) != 0 {
-			md += "\n"
-		}
-	}
-
-	// Add today's header if it doesn't exist
-	if !strings.Contains(md, todayHeader(timezone)) {
-		md += todayHeader(timezone) + "\n"
-	}
-
-	// Format timestamp with timezone
-	timestamp := time.Now().In(timezone).Format("`15:04`")
-
-	// Handle images similar to journal
-	if txt.HasImage(content) {
-		// If there's an image - place timestamp under the image
-		re := regexp.MustCompile(txt.ImgPattern)
-		imgLink := re.FindString(content)
-		content = strings.TrimSpace(strings.Replace(content, imgLink, "", 1))
-		content = fmt.Sprintf("%s\n%s %s\n", imgLink, timestamp, strings.TrimSpace(content))
-	} else {
-		content = fmt.Sprintf("%s %s\n", timestamp, content)
-	}
-
-	md += content
-
-	if err := b.fs.Write(fs.DirRoot, fs.ChatFilename, md); err != nil {
-		return fmt.Errorf("saveToChat: %w", err)
 	}
 
 	return nil
@@ -1837,26 +1788,30 @@ func (b *Bot) moveToNewChecklist(params []string) error {
 }
 
 func (b *Bot) moveToJournal(params []string) error {
-	filenameHash := params[0]
-	fromFilename, err := b.fs.Unhash(fs.DirToday, filenameHash)
+	index, _ := strconv.Atoi(params[0])
+
+	//fromFilename, err := b.fs.Unhash(fs.DirToday, index)
+	//if err != nil {
+	//	return fmt.Errorf("move to journal: can't unhash filename: %w", err)
+	//}
+	//
+	//content, err := b.restoreMsg(fs.DirToday, fromFilename)
+	//if err != nil {
+	//	return fmt.Errorf("move to journal: can't read content of '%s': %w", fromFilename, err)
+	//}
+
+	err := b.MoveRecordFromChat(index, func(content string, t time.Time) error {
+		// TODO take into account time
+		return journal.AddRecord(b.fs, content, b.cfg.Timezone())
+	})
 	if err != nil {
-		return fmt.Errorf("move to journal: can't unhash filename: %w", err)
+		return fmt.Errorf("failed to move to journal: can't add record: %w", err)
 	}
 
-	content, err := b.restoreMsg(fs.DirToday, fromFilename)
-	if err != nil {
-		return fmt.Errorf("move to journal: can't read content of '%s': %w", fromFilename, err)
-	}
-
-	err = journal.AddRecord(b.fs, content, b.cfg.Timezone())
-	if err != nil {
-		return fmt.Errorf("failed to move to journal: can't add note: %w", err)
-	}
-
-	err = b.fs.Del(fs.DirToday, fromFilename)
-	if err != nil {
-		return fmt.Errorf("failed to move to journal: can't delete note: %w", err)
-	}
+	//err = b.fs.Del(fs.DirToday, fromFilename)
+	//if err != nil {
+	//	return fmt.Errorf("failed to move to journal: can't delete note: %w", err)
+	//}
 
 	b.delAllKeyboards()
 	msg := txt.Emoji(i18n.Emoji("journal"), i18n.Tr("Saved to <b>journal</b>"))
@@ -2686,9 +2641,4 @@ func completedMsg() string {
 	}
 
 	return msgs[rand.Intn(len(msgs))]
-}
-
-func todayHeader(timezone *time.Location) string {
-	nowTZ := time.Now().In(timezone)
-	return fmt.Sprintf("#### %d %s, %s", nowTZ.Day(), nowTZ.Format("January"), nowTZ.Weekday())
 }
