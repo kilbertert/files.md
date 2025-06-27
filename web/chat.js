@@ -180,7 +180,7 @@ function renderMessages() {
                 </div>
             </div>
         </div>
-    `).reverse().join('');
+    `).join('');
 
     attachEventListeners();
 }

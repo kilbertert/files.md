@@ -53,7 +53,7 @@ async function init(el) {
         document.getElementById('open-folder').style.display = 'inline';
         document.getElementById('new-file').style.display = 'none';
         document.getElementById('new-folder').style.display = 'none';
-        document.getElementById('chat').style.display = 'none';
+        document.getElementById('open-chat').style.display = 'none';
         files = DEFAULT_FILES;
         updateSidebar();
         await openFile('', 'Welcome.md');
@@ -64,7 +64,7 @@ async function init(el) {
         document.getElementById('open-folder').style.display = 'none';
         document.getElementById('new-file').style.display = 'inline';
         document.getElementById('new-folder').style.display = 'inline';
-        document.getElementById('chat').style.display = 'inline';
+        document.getElementById('open-chat').style.display = 'inline';
     }
 
     const permission = await savedDirHandle.queryPermission({mode: 'readwrite'});
@@ -73,7 +73,7 @@ async function init(el) {
         document.getElementById('open-folder').style.display = 'inline';
         document.getElementById('new-file').style.display = 'none';
         document.getElementById('new-folder').style.display = 'none';
-        document.getElementById('chat').style.display = 'none';
+        document.getElementById('open-chat').style.display = 'none';
         isWelcome = true;
     }
 
@@ -1157,7 +1157,7 @@ async function openDir() {
     document.getElementById('open-folder').style.display = 'none';
     document.getElementById('new-file').style.display = 'inline';
     document.getElementById('new-folder').style.display = 'inline';
-    document.getElementById('chat').style.display = 'inline';
+    document.getElementById('open-chat').style.display = 'inline';
 
     await saveDirectoryHandle(dirHandle);
     sidebarFiles = await loadLocalFiles(dirHandle)
