@@ -45,12 +45,15 @@ function parseFileContent(content) {
     const messages = [];
     let currentDate = null;
 
+    // TODO write clearer way
+    let numblocks = 0
     for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
 
         // Check if block is a date header
         if (block.startsWith('####')) {
             currentDate = block.replace(/^#+\s*/, '').trim();
+            numblocks++;
             continue;
         }
 
@@ -61,7 +64,7 @@ function parseFileContent(content) {
 
             if (text.trim()) {
                 messages.push({
-                    index: i,
+                    index: i - numblocks,
                     text: text.trim(),
                     timestamp: timestamp,
                     date: currentDate || new Date().toDateString()
@@ -324,11 +327,24 @@ function attachEventListeners() {
     document.querySelectorAll('.submenu-item').forEach(item => {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
-            const messageIndex = item.closest('.submenu-btn').dataset.index;
+            const index = item.closest('.submenu-btn').dataset.index;
+
             const targetFile = item.dataset.targetFile;
             const targetDir = item.dataset.targetDir;
+            console.log(targetFile, targetDir);
+            if (targetFile !== undefined) {
+                let cmd = {
+                    n: "mf",
+                    t: "cmd",
+                    p: [targetFile, index.toString()]
+                }
+                replyCmd(JSON.stringify(cmd))
 
-            console.log(`Moving message ${messageIndex} to ${targetFile || targetDir}`);
+            } else if (targetDir !== undefined) {
+
+            }
+
+
 
             // Close submenu after selection
             item.closest('.btn-submenu').classList.remove('show');

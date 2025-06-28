@@ -1566,45 +1566,54 @@ func (b *Bot) moveToNewDir(params []string) error {
 func (b *Bot) moveToExistingFile(params []string) error {
 	// TODO Remove input expectations if dir is not today (?)
 	existingFilenameHash := params[0]
-	fromDirHash := params[1]
-	fromFilenameHash := params[2]
+	index, _ := strconv.Atoi(params[1])
+	//fromDirHash := params[1]
+	//fromFilenameHash := params[2]
 
 	existingFilename, err := b.fs.Unhash(fs.DirRoot, existingFilenameHash)
 	if err != nil {
-		return fmt.Errorf("move to file: can't unhash existing file '%s': %w", fromFilenameHash, err)
+		return fmt.Errorf("move to file: can't unhash existing file '%s': %w", existingFilenameHash, err)
 	}
 
-	// TODO add test for adding to same file, it seems it is broken (after we added short hash)
-	if fromFilenameHash == existingFilenameHash {
-		b.delAllKeyboards()
-		msg := txt.Emoji(i18n.Emoji("file"), fmt.Sprintf(i18n.Tr("Saved to <b>%s</b>"), fs.Title(existingFilename)))
-		// Just an informative messages
-		_, _ = b.tg.Send(b.userID, msg, nil, tg.MarkupHTML)
-		return b.ShowToday(nil)
-	}
+	//// TODO add test for adding to same file, it seems it is broken (after we added short hash)
+	//addingToSameFile := fromFilenameHash == existingFilenameHash
+	//if addingToSameFile {
+	//	b.delAllKeyboards()
+	//	msg := txt.Emoji(i18n.Emoji("file"), fmt.Sprintf(i18n.Tr("Saved to <b>%s</b>"), fs.Title(existingFilename)))
+	//	// Just an informative messages
+	//	_, _ = b.tg.Send(b.userID, msg, nil, tg.MarkupHTML)
+	//	return b.ShowToday(nil)
+	//}
 
-	fromDir, err := b.fs.Unhash(fs.DirRoot, fromDirHash)
+	//fromDir, err := b.fs.Unhash(fs.DirRoot, fromDirHash)
+	//if err != nil {
+	//	return fmt.Errorf("move to file: can't unhash from dir '%s': %w", fromDirHash, err)
+	//}
+	//
+	//fromFilename, err := b.fs.Unhash(fromDir, fromFilenameHash)
+	//if err != nil {
+	//	return fmt.Errorf("move to file: can't unhash new filename '%s': %w", fromFilenameHash, err)
+	//}
+	//
+	//content, err := b.restoreMsg(fromDir, fromFilename)
+	//if err != nil {
+	//	return fmt.Errorf("move to file: can't read content of '%s': %w", fromFilename, err)
+	//}
+	//
+	//// We can tolerate this
+	//_ = b.fs.Del(fromDir, fromFilename)
+
+	err = b.MoveRecordFromChat(index, func(content string, timestamp time.Time) error {
+		return b.addToFile(fs.DirRoot, existingFilename, content)
+	})
 	if err != nil {
-		return fmt.Errorf("move to file: can't unhash from dir '%s': %w", fromDirHash, err)
+		return fmt.Errorf("move to file: can't add to existing file '%s': %w", existingFilename, err)
 	}
 
-	fromFilename, err := b.fs.Unhash(fromDir, fromFilenameHash)
-	if err != nil {
-		return fmt.Errorf("move to file: can't unhash new filename '%s': %w", fromFilenameHash, err)
-	}
-
-	content, err := b.restoreMsg(fromDir, fromFilename)
-	if err != nil {
-		return fmt.Errorf("move to file: can't read content of '%s': %w", fromFilename, err)
-	}
-
-	// We can tolerate this
-	_ = b.fs.Del(fromDir, fromFilename)
-
-	err = b.addToFile(fs.DirRoot, existingFilename, content)
-	if err != nil {
-		return fmt.Errorf("move to file: can't add to existing file: %w", err)
-	}
+	//err = b.addToFile(fs.DirRoot, existingFilename, content)
+	//if err != nil {
+	//	return fmt.Errorf("move to file: can't add to existing file: %w", err)
+	//}
 
 	b.db.SetRecentCommand(consts.CmdMoveToExistingFile)
 	b.db.SetRecentCommandParams([]string{fs.ShortHash(existingFilename), fs.ShortHash(fs.DirToday)})

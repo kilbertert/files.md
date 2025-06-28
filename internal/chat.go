@@ -108,12 +108,11 @@ func (b *Bot) MoveRecordFromChat(index int, callback func(content string, timest
 		return fmt.Errorf("no records found")
 	}
 
-	// Handle index - no support for -1, only positive indices
 	if index < 1 || index > len(recordIndices) {
 		return fmt.Errorf("index out of bounds: use 1-%d", len(recordIndices))
 	}
 
-	targetBlockIndex := recordIndices[index-1]
+	targetBlockIndex := recordIndices[index]
 	targetRecord := blocks[targetBlockIndex]
 
 	// Find closest header above target record for date context

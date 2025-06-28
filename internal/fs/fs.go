@@ -125,6 +125,10 @@ func (fs FS) CreateDirsIfNotExist(dirs ...string) error {
 		}
 	}
 	for _, dir := range dirs {
+		if dir == DirRoot {
+			continue
+		}
+
 		userPath := path.Join(fs.rootPath, dir)
 		exists, err := Exists(fs.backend, userPath)
 		if err != nil {
