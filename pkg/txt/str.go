@@ -68,6 +68,12 @@ func NormNewLines(text string) string {
 	return strings.Replace(text, "\r", "\n", -1)   // replace remaining Mac line endings
 }
 
+func IsMultiline(text string) bool {
+	text = NormNewLines(text)
+	lines := strings.Split(text, "\n")
+	return len(lines) > 1
+}
+
 // SplitTextIntoChunks splits the text into chunks less than or equal to maxLen.
 // The chunks are split at the last new line or space before maxLen (inclusive).
 // Spaces-like characters are trimmed out from the beginning and the end of each chunk.

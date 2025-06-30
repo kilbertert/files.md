@@ -1122,6 +1122,7 @@ func (b *Bot) showChecklists(_ []string) error {
 	return nil
 }
 
+// TODO support chat.md flow
 func (b *Bot) showPostpone(_ []string) error {
 	files, err := b.fs.FilesAndDirs(fs.DirToday)
 	if err != nil {
@@ -1731,48 +1732,58 @@ func (b *Bot) moveToExistingNote(params []string) error {
 }
 
 func (b *Bot) moveToChecklist(params []string) error {
-	filenameHash := params[0]
+	msgIndex, err := strconv.Atoi(params[0])
+	if err != nil {
+		return fmt.Errorf("move to checklistDir: can't parse hash or index from params: %w", err)
+	}
+	msgIndex = -msgIndex
 	checklistHash := params[1]
 
-	filename, err := b.fs.Unhash(fs.DirToday, filenameHash)
+	//filename, err := b.fs.Unhash(fs.DirToday, msgIndex)
+	//if err != nil {
+	//	return fmt.Errorf("move to checkilst: %w", err)
+	//}
+
+	checklistDir, err := b.fs.Unhash(fs.DirRoot, checklistHash)
 	if err != nil {
-		return fmt.Errorf("move to checkilst: %w", err)
+		return fmt.Errorf("move to checklistDir: %w", err)
 	}
 
-	checklist, err := b.fs.Unhash(fs.DirRoot, checklistHash)
-	if err != nil {
-		return fmt.Errorf("move to checklist: %w", err)
-	}
+	err = b.moveFromChat(func(content string, t time.Time) error {
+		isMultiline := txt.IsMultiline(content)
 
-	isMultiline, err := b.fs.IsMultiline(fs.DirToday, filename)
-	if err != nil {
-		return fmt.Errorf("move to checklist: %w", err)
-	}
+		if isMultiline && b.cfg.ShouldSplitChecklist(checklistDir) {
+			//content, err := b.fs.Read(fs.DirToday, filename)
+			//if err != nil {
+			//	return fmt.Errorf("move to checklistDir: %w", err)
+			//}
 
-	if isMultiline && b.cfg.ShouldSplitChecklist(checklist) {
-		content, err := b.fs.Read(fs.DirToday, filename)
-		if err != nil {
-			return fmt.Errorf("move to checklist: %w", err)
-		}
-
-		content = strings.TrimSpace(txt.NormNewLines(content))
-		lines := strings.Split(content, "\n")
-		for _, line := range lines {
-			line = fs.SanitizeFilename(line)
-			err = b.fs.Write(checklist, fs.Filename(line), "")
-			if err != nil {
-				return fmt.Errorf("move to checklist: %w", err)
+			content = strings.TrimSpace(txt.NormNewLines(content))
+			lines := strings.Split(content, "\n")
+			for _, line := range lines {
+				line = fs.SanitizeFilename(line)
+				err = b.fs.Write(checklistDir, fs.Filename(line), "")
+				if err != nil {
+					return fmt.Errorf("move to checklistDir: %w", err)
+				}
 			}
+		} else {
+			sanitizedTitle, content, err := b.extractTitleAndContent(content)
+			if err != nil {
+				return fmt.Errorf("move to checklistDir: %w", err)
+			}
+			filename := fs.Filename(sanitizedTitle)
+			return b.fs.Write(checklistDir, filename, content)
 		}
-	} else {
-		err = b.fs.Rename(fs.DirToday, filename, checklist, filename)
-		if err != nil {
-			return fmt.Errorf("move to checklist: %w", err)
-		}
+
+		return nil
+	}, msgIndex)
+	if err != nil {
+		return fmt.Errorf("move to checklistDir: can't read content from chat: %w", err)
 	}
 
-	// We can tolerate this
-	_ = b.fs.Del(fs.DirToday, filename)
+	//// We can tolerate this
+	//_ = b.fs.Del(fs.DirToday, filename)
 
 	return b.ShowToday(nil)
 }

@@ -77,6 +77,8 @@ func (b *Bot) saveToChat(content string, timezone *time.Location) (int, error) {
 	return recordCount, nil
 }
 
+// moveFromChat passes messages at given indices to a specified callback function.
+// On callback success, it removes those messages from the chat file.
 func (b *Bot) moveFromChat(callback func(content string, timestamp time.Time) error, indices ...int) error {
 	key, err := b.fs.SafePath(fs.DirRoot, "")
 	if err != nil {
