@@ -254,6 +254,7 @@ func (b *Bot) handlers() map[string]func([]string) error {
 		consts.CmdMoveToLater:                 b.moveToLater,
 		consts.CmdSchedule:                    b.schedule,
 		consts.CmdScheduleForTmrw:             b.scheduleForTmrw,
+		consts.CmdScheduleForTmrwFromChat:     b.scheduleForTmrwFromChat,
 		consts.CmdComplete:                    b.complete,
 		consts.CmdPostpone:                    b.postpone,
 		consts.CmdPomodoro:                    b.togglePomodoro,
@@ -2119,6 +2120,29 @@ func (b *Bot) schedule(params []string) error {
 
 func (b *Bot) scheduleForTmrw(params []string) error {
 	filenameHash := params[0]
+
+	return b.schedule([]string{filenameHash, txt.I64(sched.Tomorrow()), ""})
+}
+
+func (b *Bot) scheduleForTmrwFromChat(params []string) error {
+	index, err := strconv.Atoi(params[0])
+	if err != nil {
+		return fmt.Errorf("schedule for tomorrow from chat: can't parse index from params: %w", err)
+	}
+
+	var filenameHash string
+	err = b.moveFromChat(func(content string, timestamp time.Time) error {
+		title, content, err := b.extractTitleAndContent(content)
+		if err != nil {
+			return fmt.Errorf("schedule for tomorrow from chat: %w", err)
+		}
+		filename := fs.Filename(title)
+		filenameHash = fs.ShortHash(filename)
+		return b.fs.Write(fs.DirToday, filename, content)
+	}, index)
+	if err != nil {
+		return fmt.Errorf("schedule for tomorrow from chat: can't read content from chat: %w", err)
+	}
 
 	return b.schedule([]string{filenameHash, txt.I64(sched.Tomorrow()), ""})
 }

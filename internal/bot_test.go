@@ -60,104 +60,103 @@ func TestSaveFromTextMsg(t *testing.T) {
 	r.Equal("#### 29 June, Sunday\n`12:00` New task\n", chat)
 }
 
-// Test - move long from chat to task
-//func TestSaveFromLongTextMsg(t *testing.T) {
-//	r := require.New(t)
-//
-//	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
-//	r.NoError(err)
-//
-//	tgram := tg.NewFakeTG()
-//
-//	mode := userconfig.DefaultConfig.Mode
-//	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
-//	defer func() {
-//		userconfig.DefaultConfig.Mode = mode
-//	}()
-//
-//	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
-//	err = bot.Reply(tg.NewUpd(-1, strings.Repeat("a", 101)))
-//	r.NoError(err)
-//
-//	tasks, err := bot.fs.FilesAndDirs("today")
-//	r.NoError(err)
-//
-//	filename := fmt.Sprintf("A%s....md", strings.Repeat("a", 99))
-//	r.Len(tasks, 1)
-//	r.Equal(filename, tasks[0].Name)
-//
-//	content, err := bot.fs.Read("today", filename)
-//	r.NoError(err)
-//	r.Equal("A"+strings.Repeat("a", 100), content)
-//}
+func TestSaveFromLongTextMsg(t *testing.T) {
+	r := require.New(t)
 
-//func TestSaveFromTextMsgWithSanitize(t *testing.T) {
-//	r := require.New(t)
-//
-//	mode := userconfig.DefaultConfig.Mode
-//	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
-//	defer func() {
-//		userconfig.DefaultConfig.Mode = mode
-//	}()
-//
-//	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
-//	r.NoError(err)
-//
-//	tgram := tg.NewFakeTG()
-//
-//	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
-//	err = bot.Reply(tg.NewUpd(-1, "New task/"))
-//	r.NoError(err)
-//
-//	tasks, err := bot.fs.FilesAndDirs("today")
-//	r.NoError(err)
-//
-//	r.Len(tasks, 1)
-//	r.Equal("New task／.md", tasks[0].Name)
-//
-//	content, err := bot.fs.Read("today", "New task／.md")
-//	r.NoError(err)
-//	r.Equal("New task/", content)
-//
-//	err = bot.Reply(tg.NewUpdCmd(-1, tg.NewCmd("today", nil)))
-//	r.NoError(err)
-//
-//	r.Equal("<b>1</b> left"+wideSpacer, tgram.LastEditedText)
-//	r.Equal(tg.NewKeyboard([]tg.Row{
-//		tg.NewBtn("👀 New task/", tg.NewCmd("task", []string{"today", "24e70ffbf48"})),
-//	},
-//	), tgram.LastEditedKeyboard)
-//}
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
 
-//func TestAddMultilineTaskToToday(t *testing.T) {
-//	r := require.New(t)
-//
-//	mode := userconfig.DefaultConfig.Mode
-//	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
-//	defer func() {
-//		userconfig.DefaultConfig.Mode = mode
-//	}()
-//
-//	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
-//	r.NoError(err)
-//
-//	tgram := tg.NewFakeTG()
-//
-//	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
-//	err = bot.Reply(tg.NewUpd(-1, "New task\nContent"))
-//	r.NoError(err)
-//
-//	tasks, err := bot.fs.FilesAndDirs("today")
-//	r.NoError(err)
-//
-//	r.Len(tasks, 1)
-//	r.Equal("New task.md", tasks[0].Name)
-//	r.True(tasks[0].IsMultiline)
-//
-//	content, err := bot.fs.Read("today", "New task.md")
-//	r.NoError(err)
-//	r.Equal("Content", content)
-//}
+	tgram := tg.NewFakeTG()
+
+	mode := userconfig.DefaultConfig.Mode
+	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
+	defer func() {
+		userconfig.DefaultConfig.Mode = mode
+	}()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	err = bot.Reply(tg.NewUpd(-1, strings.Repeat("a", 101)))
+	r.NoError(err)
+
+	tasks, err := bot.fs.FilesAndDirs("today")
+	r.NoError(err)
+
+	filename := fmt.Sprintf("A%s....md", strings.Repeat("a", 99))
+	r.Len(tasks, 1)
+	r.Equal(filename, tasks[0].Name)
+
+	content, err := bot.fs.Read("today", filename)
+	r.NoError(err)
+	r.Equal("A"+strings.Repeat("a", 100), content)
+}
+
+func TestSaveFromTextMsgWithSanitize(t *testing.T) {
+	r := require.New(t)
+
+	mode := userconfig.DefaultConfig.Mode
+	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
+	defer func() {
+		userconfig.DefaultConfig.Mode = mode
+	}()
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	err = bot.Reply(tg.NewUpd(-1, "New task/"))
+	r.NoError(err)
+
+	tasks, err := bot.fs.FilesAndDirs("today")
+	r.NoError(err)
+
+	r.Len(tasks, 1)
+	r.Equal("New task／.md", tasks[0].Name)
+
+	content, err := bot.fs.Read("today", "New task／.md")
+	r.NoError(err)
+	r.Equal("New task/", content)
+
+	err = bot.Reply(tg.NewUpdCmd(-1, tg.NewCmd("today", nil)))
+	r.NoError(err)
+
+	r.Equal("<b>1</b> left"+wideSpacer, tgram.LastEditedText)
+	r.Equal(tg.NewKeyboard([]tg.Row{
+		tg.NewBtn("👀 New task/", tg.NewCmd("task", []string{"today", "24e70ffbf48"})),
+	},
+	), tgram.LastEditedKeyboard)
+}
+
+func TestAddMultilineTaskToToday(t *testing.T) {
+	r := require.New(t)
+
+	mode := userconfig.DefaultConfig.Mode
+	userconfig.DefaultConfig.Mode = userconfig.ModeTasks
+	defer func() {
+		userconfig.DefaultConfig.Mode = mode
+	}()
+
+	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
+	r.NoError(err)
+
+	tgram := tg.NewFakeTG()
+
+	bot := NewBot(-1, tgram, userFS, db.NewFakeDB(), fakeConfig())
+	err = bot.Reply(tg.NewUpd(-1, "New task\nContent"))
+	r.NoError(err)
+
+	tasks, err := bot.fs.FilesAndDirs("today")
+	r.NoError(err)
+
+	r.Len(tasks, 1)
+	r.Equal("New task.md", tasks[0].Name)
+	r.True(tasks[0].IsMultiline)
+
+	content, err := bot.fs.Read("today", "New task.md")
+	r.NoError(err)
+	r.Equal("Content", content)
+}
 
 //func TestAddTaskWithSpecCharsToToday(t *testing.T) {
 //	r := require.New(t)

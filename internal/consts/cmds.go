@@ -45,6 +45,7 @@ const (
 	CmdShowScheduleForDay          = "sc_day"
 	CmdSchedule                    = "sc"
 	CmdScheduleForTmrw             = "sc_tmrw"
+	CmdScheduleForTmrwFromChat     = "sc_tmrw_ch"
 	CmdPomodoro                    = "pomodoro"
 	CmdShowScheduleForDayRecurring = "sc_day_r"
 	CmdLater                       = "later"
