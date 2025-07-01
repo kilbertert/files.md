@@ -94,12 +94,13 @@
 <div id="content">
     <textarea id="editor" style="display: none"></textarea>
 
-    <div id="chat-container">
+    <div id="chat-container" style="display: none">
         <div id="chat" style="display: none;"></div>
         <textarea id="chat-input" style="display: none;" class="input-field" placeholder="Type your message..." rows="1"></textarea>
+        <button id="close-chat" onclick="closeChatModal()" title="Close chat" style="display: none">×</button>
     </div>
 
-    <button id="open-chat" style="display: none" title="Go to chat mode" onclick="toggleChat()">
+    <button id="open-chat" style="display: none" title="Open Chat" onclick="toggleChat()">
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 34 32">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M 25 7 H 11 a 4 4 0 0 0 -4 4 v 10 a 4 4 0 0 0 4 4 h 7 l 6 4 v -4 h 1 a 4 4 0 0 0 4 -4 V 11 a 4 4 0 0 0 -4 -4 z"/>
         </svg>

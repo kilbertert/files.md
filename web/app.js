@@ -9,9 +9,6 @@ let debug = false;
 const sidebar = document.getElementById('sidebar');
 const sidebarContainer = document.getElementById('sidebar-container');
 const content = document.getElementById('content')
-const chat = document.getElementById('chat');
-const chatInput = document.getElementById('chat-input');
-const chatButton = document.getElementById('open-chat');
 
 async function init(el) {
     // Authorize if we have one-time token in URL.
@@ -497,7 +494,9 @@ async function openFile(dir, filename, saveToHistory = true) {
         chatInput.style.display = 'none';
         isChat = false;
     }
-    document.getElementById('open-chat').style.display = 'block';
+    chatButton.style.display = 'block';
+    chatContainer.style.display = 'none';
+
 
     const start = performance.now();
     filename = filename.normalize('NFC');

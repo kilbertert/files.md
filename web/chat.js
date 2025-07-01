@@ -3,7 +3,14 @@ let messages = [];
 const CHAT_FILENAME = 'Chat.txt';
 let chatIsClean = true; // Are there any unsaved changes?
 
+const chat = document.getElementById('chat');
+const chatInput = document.getElementById('chat-input');
+const chatButton = document.getElementById('open-chat');
+const chatContainer = document.getElementById('chat-container');
+
 async function openChat() {
+    chatContainer.style.display = 'flex';
+
     document.getElementById('open-chat').style.display = 'none';
     if (editor.currentFile !== CHAT_FILENAME) {
         const state = {dir: editor.currentDir, file: editor.currentFile};
@@ -31,10 +38,11 @@ async function openChatModal() {
 
     // codemirror.style.display = 'none';
 
-    const chatContainer = document.getElementById('chat-container');
     chatContainer.classList.add('modal');
+    chatContainer.style.display = 'flex';
     chatButton.style.display = 'none';
-
+    chat.style.display = 'block';
+    chatInput.style.display = 'block';
     chat.style.display = 'flex';
     chatInput.style.display = 'block';
 
@@ -46,18 +54,21 @@ async function openChatModal() {
 }
 
 function closeChatModal() {
-    const chatContainer = document.getElementById('chat-container');
     chatContainer.classList.remove('modal');
-    chatContainer.display = 'none';
+    chatContainer.style.display = 'none';
     chatButton.style.display = 'block';
     chat.style.display = 'none';
     chatInput.style.display = 'none';
 }
 
 async function toggleChat() {
-    chatInput.focus();
     if (isChat) {
-        history.back();
+        return;
+    }
+
+    let isChatModal = document.getElementById('chat-container').classList.contains('modal');
+    if (isChatModal) {
+        closeChatModal();
     } else {
         openChatModal();
     }
@@ -225,7 +236,8 @@ async function send() {
 }
 
 async function receive(val) {
-    if (editor.currentFile !== CHAT_FILENAME) {
+    let isChatModal = document.getElementById('chat-container').classList.contains('modal');
+    if (!isChatModal && editor.currentFile !== CHAT_FILENAME) {
         return;
     }
 

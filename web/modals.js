@@ -395,7 +395,7 @@ class MoveModal {
         // Close on outside click
         document.addEventListener('click', (event) => {
             const moveModal = document.getElementById('move');
-            if (moveModal.style.display === 'block' && !moveModal.contains(event.target)) {
+            if (moveModal.style.display !== 'none' && !moveModal.contains(event.target)) {
                 this.close();
             }
         });

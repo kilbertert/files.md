@@ -12,6 +12,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    background: var(--color-bg-alt);
 }
 
 #chat-container.modal {
@@ -21,7 +22,7 @@
     width: 700px;
     height: 500px;
     border: 1px solid var(--color-border);
-    border-radius: 5px;
+    border-radius: 15px;
 }
 
 #chat::before {
@@ -268,4 +269,27 @@
     cursor: pointer;
     stroke: var(--color-tx) !important;
     border-radius: 50%;
+}
+
+#chat-container.modal #close-chat {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    z-index: 1001;
+    width: 30px;
+    height: 30px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+#close-chat:hover {
+    color: var(--color-tx);
 }
