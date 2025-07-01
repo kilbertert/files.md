@@ -8,6 +8,22 @@
     /*background: var(--color-bg);*/
 }
 
+#chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#chat-container.modal {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 700px;
+    height: 500px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+}
+
 #chat::before {
     content: '';
     flex-grow: 1;
@@ -238,4 +254,18 @@
 
 #chat.block-selecting .message-content {
     user-select: none;
+}
+
+#open-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+}
+
+#open-chat:hover svg {
+    cursor: pointer;
+    stroke: var(--color-tx) !important;
+    border-radius: 50%;
 }

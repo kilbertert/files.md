@@ -11,6 +11,7 @@ const sidebarContainer = document.getElementById('sidebar-container');
 const content = document.getElementById('content')
 const chat = document.getElementById('chat');
 const chatInput = document.getElementById('chat-input');
+const chatButton = document.getElementById('open-chat');
 
 async function init(el) {
     // Authorize if we have one-time token in URL.
@@ -496,6 +497,7 @@ async function openFile(dir, filename, saveToHistory = true) {
         chatInput.style.display = 'none';
         isChat = false;
     }
+    document.getElementById('open-chat').style.display = 'block';
 
     const start = performance.now();
     filename = filename.normalize('NFC');
@@ -701,6 +703,8 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
         searchModal.close();
         moveModal.close();
+        closeChatModal();
+        editor.focus();
     }
 });
 
@@ -711,7 +715,7 @@ function openBot() {
 
     sidebarContainer.style.display = 'none';
     content.style.display = 'none';
-    chatContainer.style.display = 'flex';
+    chat.style.display = 'flex';
     input.focus();
     isChat = true;
 

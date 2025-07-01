@@ -1,11 +1,10 @@
 // Global variables
 let messages = [];
-let chatContainer;
-let messageInput;
 const CHAT_FILENAME = 'Chat.txt';
 let chatIsClean = true; // Are there any unsaved changes?
 
 async function openChat() {
+    document.getElementById('open-chat').style.display = 'none';
     if (editor.currentFile !== CHAT_FILENAME) {
         const state = {dir: editor.currentDir, file: editor.currentFile};
         history.pushState(state, '');
@@ -26,12 +25,41 @@ async function openChat() {
     scrollToBottom();
 }
 
+async function openChatModal() {
+    // editor.currentDir = "";
+    // editor.currentFile = CHAT_FILENAME;
+
+    // codemirror.style.display = 'none';
+
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.classList.add('modal');
+    chatButton.style.display = 'none';
+
+    chat.style.display = 'flex';
+    chatInput.style.display = 'block';
+
+    chatInput.focus();
+    // isChat = true;
+    await loadData();
+    renderMessages();
+    scrollToBottom();
+}
+
+function closeChatModal() {
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.classList.remove('modal');
+    chatContainer.display = 'none';
+    chatButton.style.display = 'block';
+    chat.style.display = 'none';
+    chatInput.style.display = 'none';
+}
+
 async function toggleChat() {
     chatInput.focus();
     if (isChat) {
         history.back();
     } else {
-        openChat();
+        openChatModal();
     }
 }
 
@@ -168,10 +196,10 @@ async function saveData() {
 }
 
 function initChat() {
-    chatContainer = document.getElementById('chat');
-    messageInput = document.getElementById('chat-input');
+    // chat = document.getElementById('chat');
+    // chatInput = document.getElementById('chat-input');
 
-    messageInput.addEventListener('keydown', function (e) {
+    chatInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             send();
@@ -185,10 +213,10 @@ function initChat() {
 }
 
 async function send() {
-    const text = messageInput.value.trim();
+    const text = chatInput.value.trim();
     if (!text) return;
 
-    messageInput.value = '';
+    chatInput.value = '';
     chatIsClean = false;
     reply(text);
     await loadData();
@@ -213,7 +241,7 @@ async function receive(val) {
 
 function renderMessages() {
     if (messages.length === 0) {
-        chatContainer.innerHTML = `
+        chat.innerHTML = `
             <div class="empty-state">
                 <div class="empty-title">Free your head</div>
                 <div class="empty-desc">Drop whatever’s on your mind here</div>
@@ -230,7 +258,7 @@ function renderMessages() {
         </button>
     `).join('');
 
-    chatContainer.innerHTML = messages.map(message => `
+    chat.innerHTML = messages.map(message => `
         <div class="message" data-index="${message.index}">
             <div class="message-content" 
                  contenteditable="true" 
@@ -318,16 +346,16 @@ function attachEventListeners() {
             if (e.target.id !== 'chat-input') {
                 e.preventDefault();
                 // Select all messages
-                const allMessages = chatContainer.querySelectorAll('.message');
+                const allMessages = chat.querySelectorAll('.message');
                 allMessages.forEach(message => message.classList.add('selected'));
             }
         }
     });
 
-    chatContainer.addEventListener('mousedown', function(e) {
+    chat.addEventListener('mousedown', function(e) {
         // If clicking outside messages, prepare for multi-select
         if (!e.target.closest('.message')) {
-            let allMessages = Array.from(chatContainer.querySelectorAll('.message'));
+            let allMessages = Array.from(chat.querySelectorAll('.message'));
             let startMessage = null;
 
             function handleMouseMove(e) {
@@ -378,7 +406,7 @@ function attachEventListeners() {
         if (e.shiftKey) {
             const selectedMessages = document.querySelectorAll('.message.selected');
             if (selectedMessages.length > 0) {
-                const allMessages = Array.from(chatContainer.querySelectorAll('.message'));
+                const allMessages = Array.from(chat.querySelectorAll('.message'));
                 const lastSelected = selectedMessages[selectedMessages.length - 1];
                 const startIndex = allMessages.indexOf(lastSelected);
                 const endIndex = allMessages.indexOf(message);
@@ -396,7 +424,7 @@ function attachEventListeners() {
         message.classList.add('selected');
 
         let startMessage = message;
-        let allMessages = Array.from(chatContainer.querySelectorAll('.message'));
+        let allMessages = Array.from(chat.querySelectorAll('.message'));
 
         function handleMouseMove(e) {
             const currentMessage = e.target.closest('.message');
@@ -425,7 +453,7 @@ function attachEventListeners() {
         document.addEventListener('mouseup', handleMouseUp);
     });
 
-    chatContainer.addEventListener('click', function(e) {
+    chat.addEventListener('click', function(e) {
         // Only clear selection if clicking outside messages AND not dragging
         if (!e.target.closest('.message') && !e.detail > 1) {
             document.querySelectorAll('.message.selected').forEach(m => m.classList.remove('selected'));
@@ -455,7 +483,7 @@ function attachEventListeners() {
     //     });
     // });
 
-    chatContainer.querySelectorAll('.to-file-btn').forEach(btn => {
+    chat.querySelectorAll('.to-file-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const searchModalElement = document.getElementById('search');
@@ -467,7 +495,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-dir-btn').forEach(btn => {
+    chat.querySelectorAll('.to-dir-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
 
@@ -480,7 +508,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-journal-btn').forEach(btn => {
+    chat.querySelectorAll('.to-journal-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedMessages = document.querySelectorAll('.message.selected');
@@ -506,7 +534,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-today-btn').forEach(btn => {
+    chat.querySelectorAll('.to-today-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedMessages = document.querySelectorAll('.message.selected');
@@ -532,7 +560,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-checklist-btn').forEach(btn => {
+    chat.querySelectorAll('.to-checklist-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedMessages = document.querySelectorAll('.message.selected');
@@ -558,7 +586,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-archive-btn').forEach(btn => {
+    chat.querySelectorAll('.to-archive-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedMessages = document.querySelectorAll('.message.selected');
@@ -585,7 +613,7 @@ function attachEventListeners() {
         });
     });
 
-    chatContainer.querySelectorAll('.to-recent-btn').forEach(btn => {
+    chat.querySelectorAll('.to-recent-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const selectedMessages = document.querySelectorAll('.message.selected');
@@ -613,7 +641,7 @@ function attachEventListeners() {
     });
 
     // Enable editing on double-click
-    chatContainer.querySelectorAll('.message-content').forEach(content => {
+    chat.querySelectorAll('.message-content').forEach(content => {
         content.addEventListener('dblclick', function(e) {
             e.stopPropagation();
             this.style.pointerEvents = 'auto';
@@ -639,7 +667,7 @@ function deleteNote(noteId) {
 
 function scrollToBottom() {
     setTimeout(function () {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        chat.scrollTop = chat.scrollHeight;
     }, 100);
 }
 
