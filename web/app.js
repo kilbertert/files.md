@@ -750,7 +750,6 @@ async function switchChat() {
 
 // Toggle focus mode
 document.addEventListener('keydown', function (event) {
-    // and shift
     if (event.shiftKey && isMetaKey(event) && event.key === 'Enter') {
         event.preventDefault();
         if (isChat) {
@@ -759,13 +758,14 @@ document.addEventListener('keydown', function (event) {
             openChat();
         }
         return;
-
-        // const sidebar = document.getElementById('sidebar');
-        // if (sidebar.style.display === 'none') {
-        //     sidebar.style.display = 'block';
-        // } else {
-        //     sidebar.style.display = 'none'; // Hide the sidebar
-        // }
+    }
+    if (isMetaKey(event) && event.key === '\\') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.style.display === 'none') {
+            sidebar.style.display = 'block';
+        } else {
+            sidebar.style.display = 'none'; // Hide the sidebar
+        }
     }
     if (isMetaKey(event) && event.key === 'Enter') {
         event.preventDefault();
