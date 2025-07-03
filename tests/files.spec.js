@@ -70,10 +70,8 @@ test('create new in subfolder', async ({ page }) => {
 
     await page.click('#new-file');
     await page.waitForTimeout(100);
-    await page.keyboard.type('New file');
+    await page.keyboard.type('Body content');
     await page.waitForTimeout(100);
-    await page.keyboard.press('Enter');
-    await page.keyboard.type('content');
     await page.waitForTimeout(700);
 
     await page.click('#sidebar >> text=dir');
@@ -85,7 +83,7 @@ test('create new in subfolder', async ({ page }) => {
         const cm = document.querySelector('.CodeMirror').CodeMirror;
         return cm.getValue();
     });
-    expect(codeMirrorContent).toBe("# New file\ncontent\n");
+    expect(codeMirrorContent).toBe("# New file\nBody content");
 });
 
 test('create new in root', async ({ page }) => {
