@@ -184,7 +184,9 @@ async function syncTextsWithServer() {
             // If it is current file, skip, because we sync it separately
             // TODO if we skip current, don't take it's timestamp? We had a bug when sync was broken for 1 file
             // TODO fix missing / for root files
-            if (path === `${editor.currentDir}/${editor.currentFile}` || path === editor.currentFile) {
+            if (path === `${editor.currentDir}/${editor.currentFile}` || path === editor.currentFile
+                || path === `${editor2.currentDir}/${editor2.currentFile}` || path === editor2.currentFile
+            ) {
                 console.log('Skip current ' + path);
                 continue;
             }
