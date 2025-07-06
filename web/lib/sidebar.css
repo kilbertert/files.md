@@ -37,7 +37,7 @@
 }
 
 .tj_container li span.tj_description:hover{
-	background-color: var(--color-bg-active);
+	background-color: var(--col-bg-active);
 }
 
 .tj_container li span.tj_mod_icon {
@@ -50,7 +50,7 @@
 }
 
 .tj_mod_icon svg {
-	stroke: var(--color-tx-alt);
+	stroke: var(--col-tx-alt);
 }
 
 .tj_container li span.tj_icon {
@@ -75,11 +75,11 @@
 }
 
 .tj_container span.tj_description.selected{
-	background-color: var(--color-bg-active);
+	background-color: var(--col-bg-active);
 }
 
 .tj_container span.tj_description.selected:hover{
-	background-color: var(--color-bg-active);
+	background-color: var(--col-bg-active);
 }
 
 /*Drag'n'drop styles*/
@@ -92,7 +92,7 @@
 .tj_drop_indicator {
 	position: absolute;
 	height: 1.5px;
-	background-color: var(--color-link);
+	background-color: var(--col-link);
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	pointer-events: none;
@@ -103,8 +103,8 @@
 }
 
 .tj_drop_target {
-	background-color: var(--color-bg-active);
-	color: var(--color-link);
+	background-color: var(--col-bg-active);
+	color: var(--col-link);
 	/*border: 2px solid var(--color-border) !important;*/
 	border-radius: 5px;
 }
@@ -133,5 +133,5 @@
 	padding: 5px 5px;
 	display: block;
 	/*// Make less visible than color-tx-alt*/
-	color: color-mix(in srgb, var(--color-tx-alt) 70%, transparent);
+	color: color-mix(in srgb, var(--col-tx-alt) 70%, transparent);
 }

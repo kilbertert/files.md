@@ -84,8 +84,8 @@
     -webkit-font-smoothing: antialiased;
     line-height: 1.6 !important;
     font-size: 12pt;
-    background: var(--color-bg);
-    color: var(--color-tx);
+    background: var(--col-bg);
+    color: var(--col-tx);
 }
 /*PATCHED, not indented */
 .cm-s-hypermd-light .hmd-fold-html-stub, .cm-s-hypermd-light .hmd-fold-code-stub, .cm-s-hypermd-light.CodeMirror div.HyperMD-hover > .HyperMD-hover-content code, .cm-s-hypermd-light pre.HyperMD-table-row span.cm-hmd-table-sep, .cm-s-hypermd-light span.cm-formatting-hashtag, .cm-s-hypermd-light span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code), .cm-s-hypermd-light pre.HyperMD-codeblock, .cm-s-hypermd-light span.cm-formatting-task, .cm-s-hypermd-light span.cm-hmd-indent-in-quote, .cm-s-hypermd-light pre.HyperMD-hr, .cm-s-hypermd-light span.cm-hmd-frontmatter, .cm-s-hypermd-light span.cm-hmd-orgmode-markup, .cm-s-hypermd-light span.cm-formatting-em, .cm-s-hypermd-light span.cm-formatting-strong, .cm-s-hypermd-light span.cm-formatting-strikethrough, .cm-s-hypermd-light span.cm-formatting-code, .cm-s-hypermd-light span.cm-formatting-link, .cm-s-hypermd-light span.cm-formatting-image, .cm-s-hypermd-light span.cm-url, .cm-s-hypermd-light span.cm-math, .cm-s-hypermd-light span.hmd-fold-math-placeholder, .cm-s-hypermd-light .CodeMirror-linewidget kbd,
@@ -181,7 +181,7 @@
     color: #00c;
 }
 .cm-s-hypermd-light span.cm-url {
-    color: var(--color-link);
+    color: var(--col-link);
 }
 .cm-s-hypermd-light span.cm-link {
     color: #4078c0;
@@ -280,7 +280,7 @@
 .cm-s-hypermd-light span.cm-quote {
     /*PATCHED*/
     /*color: #666;*/
-    color: var(--color-tx-alt);
+    color: var(--col-tx-alt);
     padding-left: 3px;
     text-indent: 0;
     /*margin-left: 4px;*/
@@ -559,16 +559,16 @@
     left: 0px;
     right: 0px;
     background-color: #FAFAFA;
-    border-left: 1px solid var(--color-border);
-    border-right: 1px solid var(--color-border);
+    border-left: 1px solid var(--col-border);
+    border-right: 1px solid var(--col-border);
 }
 .cm-s-hypermd-light div.HyperMD-codeblock-begin-bg {
-    border-top: 1px solid var(--color-border);
+    border-top: 1px solid var(--col-border);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
 .cm-s-hypermd-light div.HyperMD-codeblock-end-bg {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--col-border);
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
@@ -660,7 +660,7 @@
     border-radius: 4px;
     vertical-align: baseline;
     /*PATCHED*/
-    border: var(--color-border) solid 1px;
+    border: var(--col-border) solid 1px;
     padding: 1px 0.4em;
 }
 .cm-s-hypermd-light span.cm-inline-code.hmd-hidden-token {

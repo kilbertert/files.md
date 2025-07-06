@@ -2,18 +2,19 @@
     :root {
         --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         /*--font: Rubik, Cambria, "Times New Roman", Times, serif;*/
-        --color-tx: #100F0F;
-        --color-tx-alt: #878787;
-        --color-bg: #FFF;
-        --color-bg-alt: #F9F9F9;
-        --color-inline-code: #657b83;
-        --color-inline-code-bg: #d8dae0;
-        --color-link: #3A9AE5;
-        --color-link-hover: #68B5ED;
-        --color-url: #706f6b;
-        --color-tx-sel: color-mix(in srgb, var(--color-link), transparent 40%) !important;
-        --color-bg-active: #EFEFEF;
-        --color-border: #e0e0e0;
+        --col-tx: #100F0F;
+        --col-tx-alt: #878787;
+        --col-bg: #FFF;
+        --col-bg-alt: #F9F9F9;
+        --col-inline-code: #657b83;
+        --col-inline-code-bg: #d8dae0;
+        --col-link: #3A9AE5;
+        --col-link-hover: #68B5ED;
+        --col-url: #706f6b;
+        --col-tx-sel: color-mix(in srgb, var(--col-link), transparent 40%) !important;
+        --col-msg-sel: color-mix(in srgb, var(--col-link), transparent 60%) !important;
+        --col-bg-active: #EFEFEF;
+        --col-border: #e0e0e0;
     }
 
     .cm-s-hypermd-light span.cm-formatting-task {
@@ -21,41 +22,41 @@
     }
 
     .to-recent-btn, .action-btn svg {
-        fill: var(--color-tx-alt);
-        color: var(--color-tx-alt) !important;
-        stroke: var(--color-tx-alt) !important;
+        fill: var(--col-tx-alt);
+        color: var(--col-tx-alt) !important;
+        stroke: var(--col-tx-alt) !important;
     }
 
     .to-recent-btn:hover, .action-btn:hover svg {
-        fill: var(--color-link);
-        color: var(--color-link) !important;
-        stroke: var(--color-link) !important;
+        fill: var(--col-link);
+        color: var(--col-link) !important;
+        stroke: var(--col-link) !important;
     }
 
     #sidebar-toolbar svg {
-        stroke: var(--color-tx-alt) !important;
+        stroke: var(--col-tx-alt) !important;
     }
 
     #sidebar-toolbar button:hover svg {
         border-radius: 4px;
-        stroke:  var(--color-link) !important;
-        background: var(--color-bg-active);
+        stroke:  var(--col-link) !important;
+        background: var(--col-bg-active);
     }
 
     #close-chat, #fullscreen-chat {
-        color: var(--color-tx-alt) !important;
+        color: var(--col-tx-alt) !important;
     }
 
     #open-chat-modal:hover svg {
-       stroke: var(--color-link) !important;
+       stroke: var(--col-link) !important;
     }
 
     #close-chat:hover, #fullscreen-chat:hover {
-        color: var(--color-link) !important;
+        color: var(--col-link) !important;
     }
 
     #close-chat:hover {
-        color: var(--color-link) !important;
+        color: var(--col-link) !important;
     }
 
     #open-chat-modal svg {
@@ -63,19 +64,19 @@
     }
 
     #close-sidebar, #close-editor2 {
-        color: var(--color-tx-alt) !important;
+        color: var(--col-tx-alt) !important;
     }
 
     #close-sidebar:hover, #close-editor2:hover {
-        color: var(--color-link) !important;
+        color: var(--col-link) !important;
     }
 
     #open-sidebar {
-        background: var(--color-bg-active);
+        background: var(--col-bg-active);
     }
 
     .message.own {
-        background: color-mix(in srgb, var(--color-bg) 60%, transparent);
+        background: color-mix(in srgb, var(--col-bg) 60%, transparent);
     }
 }
 
@@ -122,7 +123,7 @@
 }
 
 .cm-s-hypermd-light span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code) {
-    background: color-mix(in srgb, var(--color-inline-code-bg), transparent 40%) !important;
+    background: color-mix(in srgb, var(--col-inline-code-bg), transparent 40%) !important;
     /*border: var(--color-border) !important;*/
     border-radius: 4px;
     vertical-align: baseline;
@@ -131,7 +132,7 @@
 }
 
 .cm-s-hypermd-light span.cm-formatting-list-ol {
-    color: var(--color-tx-alt) !important;
+    color: var(--col-tx-alt) !important;
 }
 
 .cm-s-hypermd-light .cm-strong {
@@ -144,7 +145,7 @@
 }
 
 .cm-s-hypermd-light span.cm-url:not(.cm-string) {
-    color: var(--color-url) !important;
+    color: var(--col-url) !important;
     font-weight: 400;
 }
 

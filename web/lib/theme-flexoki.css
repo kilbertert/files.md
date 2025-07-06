@@ -15,8 +15,8 @@
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
   font-size: 12pt;
-  background-color: var(--color-bg);
-  color: var(--color-tx);
+  background-color: var(--col-bg);
+  color: var(--col-tx);
 }
 
 .cm-s-hypermd-light .CodeMirror-linewidget table,

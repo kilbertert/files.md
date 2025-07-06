@@ -1105,6 +1105,11 @@ function toggleSidebar() {
     } else {
         sidebar.style.display = 'none';
         openZone.style.display = 'block';
+        if (isChat) {
+            chatInput.focus();
+        } else {
+            currentEditor.focus();
+        }
     }
 }
 

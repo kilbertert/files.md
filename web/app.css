@@ -1,24 +1,20 @@
 :root {
-    --color-tx-hover: #24837b;
-    --color-tx-muted: #6F6E69;
-    --color-inline-code: var(--color-tx-muted);
-    --color-inline-code-bg: var(--color-bg-alt);
-    --color-tx-faint: #B7B5AC;
-    --color-tx-sel: rgba(187, 220, 206, 0.3);
-    --color-bg: #FFFCF0; /* Paper color */
-    --color-code-keyword: #1F5EA5;
-    --color-code-op: #BC5215;
-    --color-bg-code: #f2f0e5;
-    --color-ui: #E6E4D9;
-    --color-border: #e0e0e0;
-    --font-smaller: 1.3rem;
+    --col-tx-hover: #24837b;
+    --col-inline-code: #6F6E69;
+    --col-inline-code-bg: var(--col-bg-alt);
+    --col-msg-sel: color-mix(in srgb, var(--col-link), transparent 70%) !important;
+    --col-bg: #FFFCF0; /* Paper color */
+    --col-code-keyword: #1F5EA5;
+    --col-code-op: #BC5215;
+    --col-code-bg: #f2f0e5;
+    --col-border: #e0e0e0;
     --font: -apple-system, BlinkMacSystemFont, 'Inter', 'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    --font-smaller: 1.3rem;
     --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "IBM Plex Mono",
     "Roboto Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Monaco,
     "Consolas", "Source Code Pro", monospace;
-
     --normal-width: 800px;
+    -webkit-font-smoothing: antialiased;
     color-scheme: light dark;
 }
 
@@ -37,8 +33,8 @@ html {
 
 body {
     overscroll-behavior: none;
-    background-color: var(--color-bg-alt);
-    color: var(--color-tx);
+    background-color: var(--col-bg-alt);
+    color: var(--col-tx);
     font-size: 1.7rem;
     font-size: calc(1.5rem + 0.2vw);
     font-family: var(--font);
@@ -50,7 +46,7 @@ body {
 /*Add border for PWA app only*/
 @media (display-mode: standalone) {
     body {
-        border-top: 1px solid var(--color-border);
+        border-top: 1px solid var(--col-border);
         box-sizing: border-box;
     }
 
@@ -78,11 +74,11 @@ body {
     position: relative;
     overflow: auto;
     height: 100%;
-    background: var(--color-bg-alt);
-    color: var(--color-tx-alt);
+    background: var(--col-bg-alt);
+    color: var(--col-tx-alt);
     font-size: calc(1.5rem);
     padding-left: 5px;
-    border-right: 1px solid var(--color-border);
+    border-right: 1px solid var(--col-border);
 }
 
 #sidebar > ul {
@@ -98,7 +94,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
-    background: var(--color-bg);
+    background: var(--col-bg);
 }
 #editor-container {
     flex: 1;
@@ -112,13 +108,13 @@ body {
     flex: 1;
     display: none;
     flex-direction: column;
-    border-left: 1px solid var(--color-border);
+    border-left: 1px solid var(--col-border);
     position: fixed;
     right: 0;
     top: 0;
     width: 50%;
     height: 100vh;
-    background: var(--color-bg);
+    background: var(--col-bg);
     z-index: 10;
     transform: translateX(100%);
     transition: transform 0.3s ease;
@@ -143,7 +139,7 @@ body:has(#sidebar[style*="display: none"]):has(#editor2-container.show) #editor-
 }
 
 #editor2-container {
-    border-left: 2px solid var(--color-border);
+    border-left: 2px solid var(--col-border);
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -166,12 +162,12 @@ td {
 }
 
 a {
-    color: var(--color-tx) !important;
+    color: var(--col-tx) !important;
     text-decoration: underline;
 }
 
 a:hover {
-    color: var(--color-tx-hover);
+    color: var(--col-tx-hover);
 }
 
 #search, #move {
@@ -180,7 +176,7 @@ a:hover {
     padding: 16px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
-    background: var(--color-bg);
+    background: var(--col-bg);
     display: flex;
     flex-direction: column;
     z-index: 10000;
@@ -192,9 +188,9 @@ a:hover {
     font-size: 16px;
     margin-bottom: 8px;
     box-sizing: border-box;
-    border: 2px solid var(--color-tx-faint);
+    border: 2px solid var(--col-border);
     border-radius: 4px;
-    background: var(--color-bg);
+    background: var(--col-bg);
 }
 
 #search-input:focus, #move-input:focus {
@@ -215,7 +211,7 @@ a:hover {
 }
 
 #search-results .focused, #move-results .focused {
-    background-color: var(--color-bg-active);
+    background-color: var(--col-bg-active);
     border-radius: 5px;
 }
 
@@ -264,63 +260,63 @@ a:hover {
 }
 
 .HyperMD-codeblock-bg {
-    background: var(--color-bg-alt) !important;
+    background: var(--col-bg-alt) !important;
 }
 
 .cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code) {
-    background: var(--color-inline-code-bg) !important;
-    color: var(--color-inline-code) !important;
+    background: var(--col-inline-code-bg) !important;
+    color: var(--col-inline-code) !important;
     font-family: var(--font-mono) !important;
     font-size: var(--font-smaller) !important;
 }
 
 ::selection {
-    background: var(--color-tx-sel);
+    background: var(--col-tx-sel);
 }
 
 ::-moz-selection {
-    background: var(--color-tx-sel);
+    background: var(--col-tx-sel);
 }
 
 .CodeMirror-selected {
-    background: var(--color-tx-sel) !important;
+    background: var(--col-tx-sel) !important;
 }
 
 .CodeMirror-hints {
-    background-color: var(--color-bg-alt) !important;
-    border: 1px solid var(--color-border) !important;
+    background-color: var(--col-bg-alt) !important;
+    border: 1px solid var(--col-border) !important;
     max-width: 400px;
     box-shadow: none !important;
     border-radius: 5px !important;
 }
 
 .CodeMirror-hint {
-    color: var(--color-tx-alt) !important;
+    color: var(--col-tx-alt) !important;
     padding: 5px 10px !important;
     cursor: pointer;
 }
 
 .CodeMirror-hint-active {
-    background-color: var(--color-bg-active) !important;
+    background-color: var(--col-bg-active) !important;
 }
 
 .cm-s-hypermd-light pre.HyperMD-codeblock {
-    color: var(--color-tx-muted) !important;
+    color: var(--col-tx-alt) !important;
     font-family: var(--font-mono) !important;
     font-size: var(--font-smaller) !important;
 }
 
 .cm-s-hypermd-light span.cm-link, .cm-s-hypermd-light .cm-string.cm-url.cm-hmd-barelink {
-    color: var(--color-link) !important;
+    color: var(--col-link) !important;
     /*font-weight: 450;*/
-    border-bottom:0.04em solid var(--color-border);
+    border-bottom:0.04em solid var(--col-border);
 }
 
 .cm-s-hypermd-light span.cm-link:hover, .cm-s-hypermd-light .cm-string.cm-url.cm-hmd-barelink:hover {
     cursor: pointer;
-    color: var(--color-link-hover) !important;
+    color: var(--col-link-hover) !important;
     text-decoration: none !important;
-    border-bottom:0.08em solid var(--color-link-hover);
+    border-bottom:0.08em solid var(--col-link-hover);
 }
 
 #welcome {
@@ -328,9 +324,9 @@ a:hover {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: var(--color-bg-alt);
+    background: var(--col-bg-alt);
     text-align: center;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--col-border);
     display: none;
 }
 
@@ -385,7 +381,7 @@ a:hover {
 }
 
 .cm-formatting-list-ul {
-    color: var(--color-tx-alt) !important;
+    color: var(--col-tx-alt) !important;
 }
 
 /*Hide bulletpoints when tasks*/
@@ -425,7 +421,7 @@ a:hover {
      position: fixed;
      left: 240px;
      top: 30px;
-     background: var(--color-bg-alt);
+     background: var(--col-bg-alt);
      text-align: center;
  }
 
@@ -438,7 +434,7 @@ a:hover {
 
 button svg {
     display: block;
-    stroke: var(--color-link);
+    stroke: var(--col-link);
     /*stroke: var(--color-tx-alt) !important;*/
 }
 
@@ -448,7 +444,7 @@ button svg circle {
 
 #sidebar-toolbar button:hover svg {
     border-radius: 4px;
-    stroke:  var(--color-tx) !important;
+    stroke:  var(--col-tx) !important;
 }
 
 #sidebar-toolbar {
@@ -483,7 +479,7 @@ button svg circle {
 }
 
 .resize-handle:hover {
-    background: color-mix(in srgb, var(--color-bg-active) 50%, transparent);
+    background: color-mix(in srgb, var(--col-bg-active) 50%, transparent);
 }
 
 .resize-handle::after {
@@ -497,7 +493,7 @@ button svg circle {
 }
 
 .resize-handle:hover::after {
-    background: var(--color-border);
+    background: var(--col-border);
 }
 
 body.dragging {
@@ -519,11 +515,11 @@ body.dragging * {
 }
 
 .cm-formatting.cm-formatting-link-string.cm-string.cm-url, .cm-formatting.cm-formatting-link.cm-link {
-    color: var(--color-tx-alt) !important;
+    color: var(--col-tx-alt) !important;
 }
 
 .hmd-image-preview {
-    border: var(--color-border);
+    border: var(--col-border);
 }
 
 .cm-s-hypermd-light .HyperMD-codeblock::before {
@@ -539,7 +535,7 @@ body.dragging * {
 
 .cm-s-hypermd-light .CodeMirror-line.HyperMD-codeblock {
     padding-left: 10px;
-    color: var(--color-tx-alt) !important;
+    color: var(--col-tx-alt) !important;
 }
 
 .cm-s-hypermd-light .HyperMD-codeblock::before {
@@ -576,7 +572,7 @@ body.dragging * {
 }
 
 .cm-s-hypermd-light span.cm-formatting-task {
-    color: var(--color-tx) !important;
+    color: var(--col-tx) !important;
 }
 
 .cm-s-hypermd-light span.cm-formatting-task:not(.hmd-hidden-token) {
@@ -584,7 +580,7 @@ body.dragging * {
 }
 
 .cm-s-hypermd-light span.cm-attribute, .cm-s-hypermd-light span.cm-def, .cm-s-hypermd-light span.cm-string {
-    color: var(--color-link) !important;
+    color: var(--col-link) !important;
 }
 
 .cmd-pressed .cm-inline-code:hover {
@@ -602,7 +598,7 @@ body.dragging * {
     opacity: 0;
     cursor: pointer;
     font-size: 27px;
-    color: var(--color-link);
+    color: var(--col-link);
     transition: opacity 0.2s;
 }
 
@@ -612,7 +608,7 @@ body.dragging * {
     right: 8px;
     cursor: pointer;
     font-size: 27px;
-    color: var(--color-link);
+    color: var(--col-link);
     background: none;
     border: none;
 }
@@ -629,7 +625,7 @@ body.dragging * {
     height: 100vh;
     opacity: 0;
     cursor: pointer;
-    background: color-mix(in srgb, var(--color-bg-active) 50%, transparent);
+    background: color-mix(in srgb, var(--col-bg-active) 50%, transparent);
     transition: opacity 0.2s;
     z-index: 1000;
 }

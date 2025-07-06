@@ -2,18 +2,19 @@
     :root {
         --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         /*--font: Rubik, Cambria, "Times New Roman", Times, serif;*/
-        --color-tx: #FAF9F4;
-        --color-tx-alt: #C2C0B7;
-        --color-bg: #262624;
-        --color-bg-alt: #1F1E1D;
-        --color-inline-code: #E76B6B;
-        --color-inline-code-bg: #2E2E2B;
-        --color-link: #3A9AE5;
-        --color-link-hover: #68B5ED;
-        --color-url: #AAB0BE;
-        --color-tx-sel: color-mix(in srgb, var(--color-link), transparent 40%) !important;
-        --color-bg-active: #0F0F0E;
-        --color-border: #3C3B38;
+        --col-tx: #FAF9F4;
+        --col-tx-alt: #C2C0B7;
+        --col-bg: #262624;
+        --col-bg-alt: #1F1E1D;
+        --col-inline-code: #E76B6B;
+        --col-inline-code-bg: #2E2E2B;
+        --col-link: #3A9AE5;
+        --col-link-hover: #68B5ED;
+        --col-url: #AAB0BE;
+        --col-tx-sel: color-mix(in srgb, var(--col-link), transparent 45%) !important;
+        --col-msg-sel: color-mix(in srgb, var(--col-link), transparent 80%) !important;
+        --col-bg-active: #0F0F0E;
+        --col-border: #3C3B38;
     }
 
     .cm-s-hypermd-light span.cm-formatting-task {
@@ -21,37 +22,38 @@
     }
 
     .message.user {
-        background-color: color-mix(in srgb, var(--color-bg-alt) 95%, white 5%) !important;
+        background-color: color-mix(in srgb, var(--col-bg-alt) 95%, white 5%) !important;
     }
 
     .message.bot {
-        background-color: var(--color-bg-alt) !important;
+        background-color: var(--col-bg-alt) !important;
     }
 
     .button-container button {
-        background-color: var(--color-bg-alt) !important;
+        background-color: var(--col-bg-alt) !important;
     }
 
     .to-recent-btn, .action-btn svg {
-        fill: var(--color-link);
-        color: var(--color-link) !important;
-        stroke: var(--color-link) !important;
+        fill: var(--col-link);
+        color: var(--col-link) !important;
+        stroke: var(--col-link) !important;
     }
 
     #open-chat-modal svg {
-        stroke: var(--color-link) !important;
+        stroke: var(--col-link) !important;
     }
 
     #open-chat-modal:hover svg {
-        stroke: var(--color-tx) !important;
+        stroke: var(--col-tx) !important;
     }
 
     #close-chat:hover, #fullscreen-chat:hover, #close-sidebar:hover, #close-editor2:hover {
-        color: var(--color-tx) !important;
+        color: var(--col-tx) !important;
     }
 
     .message.own {
-        background: color-mix(in srgb, var(--color-bg) 25%, transparent);
+        background: color-mix(in srgb, var(--col-bg) 25%, transparent);
     }
+
 }
 
