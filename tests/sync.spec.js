@@ -36,14 +36,10 @@ async function setup(page) {
             ];
 
             for (const file of files) {
-                try {
-                    await subdir.getFileHandle(file.name);
-                } catch (error) {
-                    const fileHandle = await subdir.getFileHandle(file.name, { create: true });
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(file.content);
-                    await writable.close();
-                }
+                const fileHandle = await root.getFileHandle(file.name, { create: true });
+                const writable = await fileHandle.createWritable();
+                await writable.write(file.content);
+                await writable.close();
             }
 
             await root.getFileHandle('Chat.txt', { create: true });
@@ -67,8 +63,8 @@ test('sync new files from server', async ({ page }) => {
     await setup(page);
 
     // Check that existing files are not removed
-    await clickAndExpectContent(page, 'subdir/Notes', '# Notes\nSome Text');
-    await clickAndExpectContent(page, 'subdir/README', '# README\nHello world');
+    await clickAndExpectContent(page, 'Notes', '# Notes\nSome Text');
+    await clickAndExpectContent(page, 'README', '# README\nHello world');
 
     // Check that new files are added
     await clickAndExpectContent(page, 'file', '# File\ntest content');
@@ -84,6 +80,25 @@ test('sync new files from client', async ({ page }) => {
     await page.waitForTimeout(3000);
 
     await expectFileOnServer(page, 'New file.md', 'Content');
+});
+
+test('sync existing files from client', async ({ page }) => {
+    await createFileOnServer('file.md', 'test content');
+    await createFileOnServer('another.md', '*italic*');
+
+    await setup(page);
+
+    // Check that existing files are not removed
+    await clickAndExpectContent(page, 'file', '# File\ntest content');
+    await clickAndExpectContent(page, 'another', '# Another\n*italic*');
+    await clickAndExpectContent(page, 'README', '# README\nHello world');
+    await clickAndExpectContent(page, 'Notes', '# Notes\nSome Text');
+
+    await page.waitForTimeout(3000);
+
+    // Check that file is updated on server
+    await expectFileOnServer(page, 'README.md', 'Hello world');
+    await expectFileOnServer(page, 'Notes.md', 'Some Text');
 });
 
 test('get changes for current file from server', async ({ page }) => {
