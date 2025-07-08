@@ -78,26 +78,43 @@ async function loadLocalFiles(rootDirHandle) {
                 const dir = `${path}${filename}/`;
                 newFiles[filename] = {};
                 dirPromises.push({handle: entry, dir, depth: depth + 1});
-
             } else if (entry.kind === 'file' && (isSupportedExtension || isConfig)) {
-                const dir = path.replace(/\/+$/, '');
-                if (!newFiles[dir]) newFiles[dir] = {};
+                let dirs = path.split('/');
+                dirs = dirs.filter(d => d !== '');
+
+                let currentDir = newFiles;
+                for (const dir of dirs) {
+                    if (!currentDir[dir]) {
+                        currentDir[dir] = {};
+                    }
+                    currentDir = currentDir[dir]; // Move reference deeper
+                }
 
                 // Reuse existing file handle if it exists
-                if (files?.[dir]?.[filename] !== undefined) {
-                    newFiles[dir][filename] = files[dir][filename];
+                let existingDir = files;
+                for (const dir of dirs) {
+                    if (existingDir === undefined || existingDir[dir] === undefined) {
+                        existingDir = undefined;
+                        break;
+                    }
+                    existingDir = existingDir[dir];
+                }
+                if (existingDir && existingDir[filename] !== undefined) {
+                    currentDir[filename] = existingDir[filename];
                     continue;
                 }
-                newFiles[dir][filename] = {handle: entry};
+
+                currentDir[filename] = {isFile: true, handle: entry};
 
                 entry.getFile().then(file => {
-                    newFiles[dir][filename].lastModified = file.lastModified;
+                    currentDir[filename].lastModified = file.lastModified;
                 });
 
                 // TODO support any dirs
-                if (dir === 'media' || dir === 'img') {
+                if (dirs[0] === 'media' || dirs[0] === 'img') {
                     getImageUrl(entry).then(imageUrl => {
-                        newFiles[dir][filename].imageUrl = imageUrl;
+                        currentDir[filename].isFile = true;
+                        currentDir[filename].imageUrl = imageUrl;
                     });
                 }
             }
@@ -138,6 +155,7 @@ async function loadLocalFiles(rootDirHandle) {
     }
 
     isLoadingLocalFiles = false;
+    console.log(newFiles);
 
     return newFiles;
 }

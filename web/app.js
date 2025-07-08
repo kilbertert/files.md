@@ -548,7 +548,7 @@ function renderSidebar(focusDir = '') {
 
     // Process directories
     for (const dir in files) {
-        if (dir === '' || dir === 'media') {
+        if (dir === 'media') {
             continue;
         }
 
