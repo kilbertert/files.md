@@ -1121,6 +1121,7 @@ async function syncCurrentFile(syncWithServer = true) {
 
             const hasFilenameChanged = newFilename.toLowerCase() !== filename.toLowerCase();
             if (hasFilenameChanged) {
+                console.log('Filename has changed from ', filename, 'to', newFilename);
                 // Change the file immediately, because on further await calls it can be synced by syncTexts.
                 currentEditor.path = toDir(path) + '/' + newFilename;
 
@@ -1148,7 +1149,7 @@ async function syncCurrentFile(syncWithServer = true) {
                     content: content,
                     lastModified: 0,
                     path: newPath,
-                    handle: await getFileHandle(path, true),
+                    handle: await getFileHandle(newPath, true),
                 });
                 await saveTextFile(newPath, getCurrentContent());
                 addServerFile(newPath, content, 0);
@@ -1385,8 +1386,13 @@ function toFilename(path) {
 }
 
 // Dir with no slash at the end.
+// Empty for root.
 function toDir(path) {
     const {dirPath} = toDirAndFilename(path);
+
+    if (dirPath === '/') {
+        return '';
+    }
 
     return dirPath;
 }
