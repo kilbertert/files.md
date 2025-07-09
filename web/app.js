@@ -181,12 +181,12 @@ function initEditor(el) {
         // TODO support other than media and img folders
         const match = path.match(/\/(.+\.(png|jpg|jpeg|gif|webp))$/i);
 
-        if (match && files['media'] && files['media'][match[1]]) {
-            return files['media'][match[1]].imageUrl;
+        if (match && files['media/'] && files['media/'][match[1]]) {
+            return files['media/'][match[1]].imageUrl;
         }
 
-        if (match && files['img'] && files['img'][match[1]]) {
-            return files['img'][match[1]].imageUrl;
+        if (match && files['img/'] && files['img/'][match[1]]) {
+            return files['img/'][match[1]].imageUrl;
         }
 
         return path;
