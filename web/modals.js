@@ -317,8 +317,12 @@ class SearchModal {
                 messagesToRemove = [btn.closest('.message')];
             }
 
-            const {dirPath, filename} = toDirPathAndFilename(path)
+            let {dirPath, filename} = toDirPathAndFilename(path)
             // TODO multidir check dirPath
+            // Make relative path, as bot supports only relative paths
+            if (dirPath !== '/') {
+                dirPath = trimPrefix(dirPath, '/');
+            }
             sendCmd('mvn', [filename, dirPath, indices.join(',')]);
             messagesToRemove.forEach(message => {
                 message.classList.add('removing');

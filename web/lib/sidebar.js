@@ -86,7 +86,6 @@ function renderSidebar(focusDir = '') {
 
         // Add to parent
         const parentDirPath = toDirPath(path);
-        console.log(dirNodes, parentDirPath);
         const parentNode = dirNodes[parentDirPath] || root;
         parentNode.addChild(dirNode);
 
