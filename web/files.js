@@ -1488,6 +1488,17 @@ function toRootDirName(path) {
     return trimPrefix(root, '/');
 }
 
+// Removes trailing slash if not the root path.
+function removeTrailingSlash(path) {
+    if (path === '/') {
+        return '/';
+    }
+    if (path.endsWith('/')) {
+        return path.slice(0, -1);
+    }
+    return path;
+}
+
 // Dir with no slash at the end.
 function toDirPathAndFilename(path) {
     let parts = path.split('/');

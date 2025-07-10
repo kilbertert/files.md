@@ -82,13 +82,13 @@ function renderSidebar(focusDir = '') {
         }
 
         let dirNode = new TreeNode(toFilename(path), {expanded: false, dir: true});
-        dirNodes[path] = dirNode;
+        dirNodes[removeTrailingSlash(path)] = dirNode;
 
         // Add to parent
-        const dirPath = toDirPath(path);
-        const parentNode = dirNodes[dirPath + '/'] || root;
+        const parentDirPath = toDirPath(path);
+        console.log(dirNodes, parentDirPath);
+        const parentNode = dirNodes[parentDirPath] || root;
         parentNode.addChild(dirNode);
-        console.log("DIR nodes", path, dirPath);
 
         // Handle focus directory or restore previous state
         let dir = toFilename(path);
@@ -122,7 +122,7 @@ function renderSidebar(focusDir = '') {
             await openFile(path);
         });
 
-        const parentNode = dirNodes[dirPath + '/'] || root;
+        const parentNode = dirNodes[dirPath] || root;
         parentNode.addChild(fileNode);
     });
 
