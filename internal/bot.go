@@ -1005,6 +1005,24 @@ func (b *Bot) ShowToday(_ []string) error {
 		kb.AddRow(btn)
 	}
 
+	// Adding tasks from today.txt
+	todayChecklistMD, err := b.fs.Read(fs.DirRoot, fs.TodayFilename)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("show today: can't read today file: %w", err)
+	}
+	if len(todayChecklistMD) != 0 {
+		items := txt.ChecklistItems(todayChecklistMD)
+		for item, isCompleted := range items {
+			if isCompleted {
+				continue
+			}
+
+			cmd := tg.NewCmd(consts.CmdComplete, []string{fs.Hash(item)})
+			btn := tg.NewBtn(txt.Emoji(i18n.Emoji("check"), item), cmd)
+			kb.AddRow(btn)
+		}
+	}
+
 	// Adding records from chat
 	content, err := b.fs.Read(fs.DirRoot, fs.InboxFilename)
 	if err != nil && !errors.Is(err, os.ErrNotExist) {
