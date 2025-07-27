@@ -800,7 +800,11 @@ function getRecentlyModifiedFiles() {
     const entries = [];
     for (const filename in files) {
         const content = files[filename];
-        if (filename && content && filename !== toFilename(INBOX_PATH) && filename !== toFilename(CONFIG_PATH)) {
+        if (filename && content
+            && filename !== toFilename(INBOX_PATH)
+            && filename !== toFilename(CONFIG_PATH)
+            && filename !== toFilename(TODAY_PATH)
+            && filename !== toFilename(LATER_PATH)) {
             entries.push([filename, content]);
         }
     }

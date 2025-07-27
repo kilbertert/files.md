@@ -178,23 +178,23 @@ function renderSidebar(focusDir = '', modifiedPaths) {
     }
 
     // Step 2: Personal group
+    let lastNode = null;
     if (dirNodes['/journal']) {
         const journalNode = dirNodes['/journal'];
-        journalNode.isGroupEnd = true;
         if (journalNode && journalNode.parent === root) {
             root.removeChild(journalNode);
             root.addChild(journalNode);
         }
+        lastNode = journalNode;
     }
-
     if (dirNodes['/habits']) {
         const habitsNode = dirNodes['/habits'];
         if (habitsNode && habitsNode.parent === root) {
             root.removeChild(habitsNode);
             root.addChild(habitsNode);
         }
+        lastNode = habitsNode;
     }
-
     if (dirNodes['/insights']) {
         const insightsNode = dirNodes['/insights'];
         if (insightsNode && insightsNode.parent === root) {
@@ -202,7 +202,9 @@ function renderSidebar(focusDir = '', modifiedPaths) {
             root.addChild(insightsNode);
             insightsNode.isGroupEnd = true;
         }
+        lastNode = insightsNode;
     }
+    lastNode.isGroupEnd = true;
 
     // Hide if only 2 groups
     let groupEndCount = 0;
