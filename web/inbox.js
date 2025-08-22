@@ -234,10 +234,38 @@ async function initWasm() {
     };
 
     console.log('Init wasm inbox');
-    const go = new Go();
-    const wasmFile = await fetch(`chat.wasm${window.COMMIT_HASH}`);
-    const wasmModule = await WebAssembly.instantiateStreaming(wasmFile, go.importObject);
-    go.run(wasmModule.instance);
+    try {
+        const go = new Go();
+        const wasmResponse = await fetch(`chat.wasm${window.COMMIT_HASH}`);
+        if (!wasmResponse.ok) {
+            throw new Error(`Failed to fetch WASM: ${wasmResponse.status} ${wasmResponse.statusText}`);
+        }
+
+        const contentLength = wasmResponse.headers.get('content-length');
+        if (contentLength) {
+            console.log(`WASM file size: ${parseInt(contentLength).toLocaleString()} bytes`);
+        }
+
+        const arrayBuffer = await  wasmResponse.clone().arrayBuffer();
+        console.log(`WASM file actual size: ${arrayBuffer.byteLength.toLocaleString()} bytes`);
+
+        const wasmModule = await WebAssembly.instantiateStreaming(wasmResponse, go.importObject);
+        console.log('WASM module loaded successfully');
+        go.run(wasmModule.instance);
+
+    } catch (error) {
+        console.error('Error loading WASM module:', error);
+
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+            console.error('Network error: Could not fetch WASM file');
+        } else if (error instanceof WebAssembly.CompileError) {
+            console.error('WASM compilation error:', error.message);
+        } else if (error instanceof WebAssembly.LinkError) {
+            console.error('WASM linking error:', error.message);
+        } else if (error instanceof WebAssembly.RuntimeError) {
+            console.error('WASM runtime error:', error.message);
+        }
+    }
 }
 
 async function logWasm(val) {
