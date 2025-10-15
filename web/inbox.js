@@ -1,5 +1,4 @@
 const INBOX_PATH = '/Inbox.txt';
-let messages = [];
 let chatIsClean = true; // Are there any unsaved changes?
 
 const inbox = document.getElementById('chat');
@@ -33,8 +32,7 @@ async function addToInbox() {
 
     chatInput.value = '';
     chatIsClean = false;
-    await loadMessages();
-    renderMessages();
+    await renderMessages();
     scrollToBottom();
 }
 
@@ -61,8 +59,7 @@ async function openInbox() {
         chatInput.focus();
     }
     isInbox = true;
-    await loadMessages();
-    renderMessages();
+    await renderMessages();
     scrollToBottom();
 }
 
@@ -76,8 +73,7 @@ async function openInboxModal() {
     chatInput.style.display = 'block';
 
     chatInput.focus();
-    await loadMessages();
-    renderMessages();
+    await renderMessages();
     scrollToBottom();
 }
 
@@ -202,17 +198,6 @@ async function saveMessagesToInbox(messages) {
     await write(INBOX_PATH, content);
 }
 
-async function loadMessages() {
-    try {
-        messages = await parseMessagesFromInbox();
-        log(`Loaded ${messages.length} messages from ${INBOX_PATH}`);
-    } catch (error) {
-        console.error('Error loading data:', error);
-        // Initialize with empty data if file doesn't exist or can't be read
-        messages = [];
-    }
-}
-
 function initInbox() {
     chatInput.addEventListener('keydown', async function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -232,8 +217,7 @@ async function receive(modifiedPaths) {
         return;
     }
 
-    await loadMessages();
-    renderMessages();
+    await renderMessages();
     scrollToBottom();
 
     const fileHandle = await getFileHandle(INBOX_PATH);
@@ -416,7 +400,7 @@ async function addToJournal(text) {
 }
 
 async function moveFromInbox(text, callback) {
-    callback(text);
+    await callback(text);
 
     let messages = await parseMessagesFromInbox();
     console.log(messages);
@@ -745,7 +729,10 @@ function attachEventListeners() {
     });
 }
 
-function renderMessages() {
+async function renderMessages() {
+    const messages = await parseMessagesFromInbox();
+    log(`Loaded ${messages.length} messages from ${INBOX_PATH}`);
+
     if (messages.length === 0) {
         inbox.innerHTML = `
             <div class="empty-state">
