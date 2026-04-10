@@ -1165,7 +1165,7 @@ const TreeUtil = {
     default_close_icon: "<svg width=\"22px\" height=\"22px\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\"> <path stroke-linecap=\"round\" stroke-width=\"2\" d=\"M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z\"/> </svg>",
     checklists_icon: "<svg width=\"22px\" height=\"22px\" fill=\"none\" viewBox=\"0 0 32 32\"> <path  stroke-linecap=\"round\" stroke-width=\"2\" d=\"M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11zM12 15h8M12 19h8\"/> </svg>",
     tasks_icon: "<svg width=\"22px\" height=\"22px\" fill=\"none\" viewBox=\"0 0 32 32\"> <path stroke-linecap=\"round\" stroke-width=\"2\" d=\"M28 11v13a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h6c3 0 3 3 5 3h9.003C27.108 9 28 9.895 28 11z\"/> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 17.5l3 3 6-6\"/> </svg>",
-    chat_icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"transform: translateX(-2px);\" width=\"25px\" height=\"25px\" fill=\"none\" viewBox=\"0 0 34 34\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M 25 7 H 11 a 4 4 0 0 0 -4 4 v 10 a 4 4 0 0 0 4 4 h 7 l 6 4 v -4 h 1 a 4 4 0 0 0 4 -4 V 11 a 4 4 0 0 0 -4 -4 z\"/> </svg>",
+    inbox_icon: "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"transform: translateX(-3px);\" width=\"25px\" height=\"25px\" fill=\"none\" viewBox=\"0 0 30 30\"> <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M 25 7 H 11 a 4 4 0 0 0 -4 4 v 10 a 4 4 0 0 0 4 4 h 7 l 6 4 v -4 h 1 a 4 4 0 0 0 4 -4 V 11 a 4 4 0 0 0 -4 -4 z\"/> </svg>",
 
     isDOM: function (obj) {
         try {
@@ -1278,7 +1278,7 @@ var TreeConfig = {
     open_icon: TreeUtil.default_open_icon,
     close_icon: TreeUtil.default_close_icon,
     tasks_icon: TreeUtil.tasks_icon,
-    chat_icon: TreeUtil.chat_icon,
+    chat_icon: TreeUtil.inbox_icon,
     checklists_icon: TreeUtil.checklists_icon,
     context_menu: undefined
 };

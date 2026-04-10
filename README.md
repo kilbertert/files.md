@@ -18,9 +18,9 @@ You can try it out: [app.files.md](https://app.files.md)
 Maybe. But this time: 
 - Only necessary features, **restrictions foster creativity**
 - No need to install anything, all you need is a browser
-- Works offline, Progressive Web Application
+- Works offline
 - Local first, you own all your files
-- No telemetry or whatsoever - truly Open Source
+- Fully Open Source - no telemetry whatsoever
 - Radically simple code. Web app is just a few `.js` files
 - Portable, no build systems, just open `web/index.html` 
 - Out of the box synchronization
