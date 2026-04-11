@@ -85,11 +85,33 @@
             this.update = core_1.debounce(function () { return _this.updateImmediately(); }, 100);
             /** Current user's selections, in each line */
             this._rangesInLine = {};
+            // PATCHED, skip cursor over always-hidden linkHref spans.
+            this._skipLinkHref = function (cm, e) {
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                if (cm.somethingSelected()) return;
+                var cursor = cm.getCursor();
+                var spans = line_spans_1.getLineSpanExtractor(cm).extract(cursor.line);
+                for (var i = 0; i < spans.length; i++) {
+                    var span = spans[i];
+                    if (span.type !== 'linkHref' || !/\.md\)?$/.test(span.text)) continue;
+                    if (e.key === 'ArrowRight' && cursor.ch >= span.begin && cursor.ch < span.end) {
+                        e.preventDefault();
+                        cm.setCursor({ line: cursor.line, ch: span.end });
+                        return;
+                    }
+                    if (e.key === 'ArrowLeft' && cursor.ch > span.begin && cursor.ch <= span.end) {
+                        e.preventDefault();
+                        cm.setCursor({ line: cursor.line, ch: span.begin });
+                        return;
+                    }
+                }
+            };
             new core_1.FlipFlop(
                 /* ON  */ function () {
                     cm.on("cursorActivity", _this.cursorActivityHandler);
                     cm.on("renderLine", _this.renderLineHandler);
                     cm.on("update", _this.update);
+                    cm.on("keydown", _this._skipLinkHref);
                     _this.update();
                     cm.refresh();
                 },
@@ -97,6 +119,7 @@
                     cm.off("cursorActivity", _this.cursorActivityHandler);
                     cm.off("renderLine", _this.renderLineHandler);
                     cm.off("update", _this.update);
+                    cm.off("keydown", _this._skipLinkHref);
                     _this.update.stop();
                     cm.refresh();
                 }).bind(this, "enabled", true);
@@ -208,11 +231,15 @@
                 while (iNodeHint < nodeCount && map[iNodeHint * 3 + 1] < spanBeginCharInCurrentLine)
                     iNodeHint++;
                 var shallHideTokens = true;
-                for (var iLineRange = 0; iLineRange < rangesInLine.length; iLineRange++) {
-                    var userRange = rangesInLine[iLineRange];
-                    if (cm_utils_1.rangesIntersect(spanRange, userRange)) {
-                        shallHideTokens = false;
-                        break;
+                // PATCHED, always hide linkHref when path ends with .md — internal links.
+                var isHiddenLinkHref = span.type === 'linkHref' && /\.md\)?$/.test(span.text);
+                if (!isHiddenLinkHref) {
+                    for (var iLineRange = 0; iLineRange < rangesInLine.length; iLineRange++) {
+                        var userRange = rangesInLine[iLineRange];
+                        if (cm_utils_1.rangesIntersect(spanRange, userRange)) {
+                            shallHideTokens = false;
+                            break;
+                        }
                     }
                 }
 

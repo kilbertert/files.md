@@ -10,7 +10,7 @@ You can store whole your life:
 - ✅ Tasks, Checklists
 - 💚 Journal, Habits
 
-All in plain `.md` files, locally. LLM-friendly ([files.md/llms.txt](files.md/llms.txt)).
+All in plain `.md` files, locally. LLM-friendly.
 
 You can try it out: [app.files.md](https://app.files.md)
 
@@ -150,6 +150,7 @@ Read 4K randomly from SSD = 150,000 ns
 ```
 
 ## ADRs (Architecture Decision Records)
+- Even though I want to store links as plain markdown links, visually I want to work with them as if they were minimal [links]. For that I decided to hide (...) part when cursor is on the line. The (...) part is only hidden for markdown-files link.
 - Brought back standart Markdown Links. I want the knowledge base to be cross-platform. It should work in GitHub.
 - Tried to move web/* stuff in the root folder for simplicity. Bad decision - there should be an explicit dir which we can use as public DOCROOT on our server.
 - Switched to [link] for links. The [link](full%20path) syntax is too overwhelming and clunky, plus we don't want to deal with path changes.
