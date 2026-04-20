@@ -1033,6 +1033,9 @@ async function openFile(path, saveToHistory = true, el = 'editor-textarea') {
         // Same-file reload (e.g. API sync or changes from local fs). Diff old and new content and
         // replaceRange only the differing middle — cursor and scroll stay put
         // naturally when the edit doesn't span them.
+        if (el === 'editor2-textarea') {
+            showEditor2();
+        }
         currentEditor.path = path;
         const oldContent = currentEditor.getValue();
         if (oldContent !== content) {

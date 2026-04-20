@@ -497,8 +497,14 @@ function getCurrentVersion() {
 }
 
 function showEditor2() {
-    rememberEditorPos();
     const editor2Container = document.getElementById('editor2-container');
+    const alreadyShown = editor2Container.classList.contains('show')
+        && editor2Container.style.display !== 'none';
+    if (alreadyShown) {
+        return;
+    }
+
+    rememberEditorPos();
 
     editor2Container.style.display = 'flex';
     editor2Container.offsetHeight; // Force reflow
