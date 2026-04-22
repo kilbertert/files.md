@@ -885,9 +885,9 @@ func TestChecklists(t *testing.T) {
 
 	userFS, err := fs.NewFS("/", afero.NewMemMapFs())
 	r.NoError(err)
-	err = userFS.Write("/", "Checklist1_.txt", "")
+	err = userFS.Write("/", "Checklist1_.md", "")
 	r.NoError(err)
-	err = userFS.Write("/", "Checklist2_.txt", "")
+	err = userFS.Write("/", "Checklist2_.md", "")
 	r.NoError(err)
 
 	tgram := tg.NewFakeTG()
@@ -898,8 +898,8 @@ func TestChecklists(t *testing.T) {
 
 	r.Equal("☑️ Checklists", tgram.LastSentText)
 	r.Equal(tg.NewKeyboard([]tg.Row{
-		tg.NewBtn("Checklist1", tg.NewCmd("checklist", []string{"05682c65e97"})),
-		tg.NewBtn("Checklist2", tg.NewCmd("checklist", []string{"916600ba600"})),
+		tg.NewBtn("Checklist1", tg.NewCmd("checklist", []string{"3755fd335a8"})),
+		tg.NewBtn("Checklist2", tg.NewCmd("checklist", []string{"c54b67d1d3d"})),
 		tg.NewBtn("🏠 Today", tg.NewCmd("today", nil)),
 	},
 	), tgram.LastSentKeyboard)

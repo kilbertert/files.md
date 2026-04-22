@@ -198,18 +198,18 @@ func TestOnlyChecklists(t *testing.T) {
 	r := require.New(t)
 
 	fs, _ := NewFS("/", afero.NewMemMapFs())
-	err := fs.Write("today", "a.md", "")
-	r.NoError(err)
-
-	err = fs.Write("/", "list_", "")
-	r.NoError(err)
+	r.NoError(fs.Write("today", "a.md", ""))
+	r.NoError(fs.Write("/", "list_.md", ""))
+	// A non-markdown file whose name happens to end in "_" must NOT be
+	// treated as a checklist.
+	r.NoError(fs.Write("/", "Molchanov_.mobi", ""))
 
 	entries, err := fs.FilesAndDirs("/")
 	r.NoError(err)
 
 	dirs := OnlyChecklists(entries)
 	r.Len(dirs, 1)
-	r.Equal("list_", dirs[0].Name)
+	r.Equal("list_.md", dirs[0].Name)
 }
 
 func TestFSTouchNew(t *testing.T) {
