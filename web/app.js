@@ -87,7 +87,9 @@ async function init() {
     renderSidebar();
     log(`Sidebar built in: ${(performance.now() - perf).toFixed(3)} milliseconds`);
 
-    if (isMemFS) {
+    const userHasCustomAPIUrl = localStorage.getItem('apiUrl') !== null;
+    if (isMemFS && !userHasCustomAPIUrl) {
+        // By the time a user has setup custom API, he doesn't need welcome file :)
         await openFile('/🪴 Welcome.md');
     } else {
         openInbox();
