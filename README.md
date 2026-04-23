@@ -68,25 +68,23 @@ However, the first brain never actually gets smarter. _The actual job is postpon
 There's another path.  
 
 ## How to take notes 🗒️
-Leonardo da Vinci, Charles Darwin, Mark Twain, Jules Verne and many others took notes using just pen and paper.  
+Leonardo da Vinci, Charles Darwin, Jules Verne and many others took notes using just pen and paper.  
 
-You don't need to learn new advanced techniques or tools to start taking notes.  
+You don't need to learn advanced tools to start taking notes.  
 
-It's even better if you reuse an old, familiar pattern.  
+It's even better if you reuse something familiar.  
 
-For me, that was chatting. It feels so natural to share an insight with friends in a message.
+For me that was chatting with friends.  
 
-Only this time, I was writing a message to a bot:
+Only this time, I was sending messages to the bot:  
 
 <div align="center">
     <img src="https://github.com/zakirullin/files.md/raw/main/web/bot.gif" alt="Telegram Bot" title="Telegram Bot" width="350"/>
 </div>
 
-And it will save our message to an `.md` file nicely.  
+That's it.   
 
 Later I open [app.files.md](https://app.files.md) and make some connections between new and old notes.
-
-My friends and I have been using this approach for 5+ years.  
 
 - You can start with no structure at all, 0 folders
 - One idea per note
