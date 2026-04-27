@@ -263,14 +263,6 @@ go run /abs/path/to/files.md/cmd/shifttime/shifttime.go
 ## Deploy on your own server
 See [docs/your-own-server.md](docs/your-own-server.md).
 
-## Run your own Telegram Bot
-1) Install [Go](https://go.dev/doc/install)
-2) Register new telegram bot via [@BotFather](https://t.me/BotFather)
-3) Add `BOT_API_TOKEN=<YOUR_TELEGRAM_API_TOKEN>` line to `.env` file
-4) Redeploy/relaunch the server
-
-Bot's artifacts can be seen in `/app/storage/<USER_ID>` folder
-
 ## Repository structure
 - `web` - web app (PWA), `index.html` is an entrypoint
 - `web/lib` - frontend libs

@@ -12,6 +12,33 @@ Deploy a systemd service:
 $ make deploy_systemd host=<YOUR_SSH_HOST>
 ```
 
+## Run your own Telegram Bot
+1) Install [Go](https://go.dev/doc/install)
+2) Register new telegram bot via [@BotFather](https://t.me/BotFather)
+3) Add `BOT_API_TOKEN=<YOUR_TELEGRAM_API_TOKEN>` line to `.env` file
+4) Redeploy/relaunch the server
+
+Bot's artifacts can be seen in `/app/storage/<USER_ID>` folder
+
+### Additional bot's settings
+1) Enable `Inline Mode` for your bot in [@BotFather](https://t.me/BotFather)
+2) Press "Edit Commands", and send the following list:
+```
+today - 🏠 Today
+files - 📄 Files
+dirs - 🗂 Dirs
+checklists - ☑️ Checklists
+schedule - 📆 Schedule
+postpone - 🦥 Postpone
+rename - ✏️ Rename
+move - ➡️ Move
+app - 🔗 Open in app
+settings - ⚙️ Settings
+help - 📕 Help
+```
+
+
+
 ## Transfer files to another server
 
 1) Backup your data (`/app/storage`)
