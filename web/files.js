@@ -1193,24 +1193,40 @@ async function syncCurrentEditor(switchAwayEditor = false) {
         const hasFilenameChanged = newFilename.toLowerCase() !== filename.toLowerCase();
         if (hasFilenameChanged) {
             log('Filename has changed from ', filename, 'to', newFilename);
+
+            const newPath = joinPath(toDirPath(path), newFilename);
+            let content = getCurrentContent();
+
+            // Probe the new path before deleting the old file. Sanitization should
+            // catch the common cases, but if the filesystem still rejects the name
+            // for any reason (reserved Windows names, length limits, …), we'd
+            // otherwise lose the file entirely.
+            let newHandle;
+            try {
+                newHandle = await getFileHandle(newPath, true);
+            } catch (error) {
+                logError('Cannot rename, filesystem rejected new name:', newPath, error);
+                alert(`Cannot rename file to "${newFilename}": ${error.message || error.name}`);
+                isMessingWithCurrentEditor = false;
+                return;
+            }
+
             // Change the file immediately, because on further await calls it can be synced by syncTexts.
-            currentEditor.path = joinPath(toDirPath(path), newFilename);
+            currentEditor.path = newPath;
 
             // 1. Remove file with old filename
             // 2. Create file with new filename
 
-            let content = getCurrentContent();
             // TODO every await means we can can have RC due to editor content change
             await remove(path);
             log('Removed due to filename change', path);
 
-            const newPath = joinPath(toDirPath(path), newFilename);
             addMemFile(newPath, {
                 isFile: true,
                 content: content,
                 lastModified: 0,
                 path: newPath,
-                handle: await getFileHandle(newPath, true),
+                handle: newHandle,
             });
             await writeIfContentIsDifferent(newPath, getCurrentContent());
             setServerFile(newPath, content, 0);
