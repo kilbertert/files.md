@@ -113,7 +113,7 @@ Press `Enter`. Then hover over the note (can be done later):
 </div>
 Click "To File", then select "brain" directory.  
 
-## Second Brain?
+## Second Brain? 🧠
 I'll quote [I Deleted My Second Brain](https://www.joanwestenberg.com/i-deleted-my-second-brain-692aa40d59d5f06dd5131e43/):
 
 > Obsidian is a brilliant piece of software. I love it, dearly. But like anything, without restraint, it can also be a trap. Markdown files in nested folders. Plugins that track your productivity. Graph views that suggest omniscience. There’s an illusion of mastery in watching your notes web into constellations. But constellations are projections. They tell stories. They do not guarantee understanding.
@@ -134,15 +134,15 @@ However, **the first brain never actually gets smarter.**
 And that's an issue - in the AI age, your first brain is as valuable as ever.  
 Use your brain to think through the notes. Apply and experience the knowledge.  
 
-## Self-help through reading and taking notes?
+## Self-help through reading and taking notes? 🧘‍
 **Harm caused at the emotional level must be healed at the emotional level.**  
 
-Not through intellectual work.  
+Not through intellectual work and taking notes.  
 No amount of self-help books can heal emotional wounds.  
 What can help is psychotherapy, rescripting and chair work. Meditation.  
 **Healing happens by feeling.**    
 
-Notes and intellectual work can prevent healing.
+Notes and intellectual work can actually prevent healing, see below.  
 
 ## Notes can prevent experience
 If your goal is to:
@@ -223,7 +223,7 @@ A good friend of yours recommends you a book.
 You've run out of butter and cheese.  
 Things like these are easy to remember, but again they drain your mental energy.  
 
-## Files structure
+## Files structure 🗂
 You don't have to think about the structure, it is predefined.  
 
 - Notes: `brain/Note.md` (`<category>/*.md`, files in subfolders)
