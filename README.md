@@ -42,9 +42,10 @@ That's it. Nothing to learn or setup.
 - Click "Install Files.md" on the right side of the address bar:
 <div align="center">
     <img src="https://github.com/zakirullin/files.md/raw/main/web/img/install.png" alt="Install" title="Install" width="350"/>
-</div>
+</div>  
+
 - Open a local folder to persist changes  
-- That's it
+- That's it  
 
 ## Telegram bot 
 1) Open [@FilesMDBot](https://t.me/FilesMDBot)
