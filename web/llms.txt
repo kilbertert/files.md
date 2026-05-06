@@ -13,9 +13,11 @@ All files are plain Markdown (.md) stored locally.
 │
 ├── Today.md              # Incoming messages, today's tasks, append-only log
 ├── Later.md              # Postponed tasks (checklist format)
+│
 ├── Read.md               # Reading list (checklist)
 ├── Watch.md              # Watch list (checklist)
 ├── Shop.md               # Shopping list (checklist)
+├── MyChecklist_.md       # Custom checklist
 │
 ├── journal/              # Daily journal
 │   └── YYYY.MM Month.md  # e.g. 2024.08 August.md

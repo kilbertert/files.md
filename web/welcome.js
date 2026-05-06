@@ -289,6 +289,14 @@ const WELCOME_FILES = {
     "My project.md": {
         "content": "You can dump project related thoughts here.",
         isFile: true,
+    },
+    "CustomChecklist_.md": {
+        "content":
+            "Any file with a trailing `_` is treated as a checklist.\n\n" +
+            "- [ ] Add your own item\n" +
+            "- [ ] Tick this when done\n" +
+            "- [x] Already finished",
+        isFile: true,
     }
 }
 

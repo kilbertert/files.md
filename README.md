@@ -11,10 +11,20 @@ You can store whole your life:
 - 💚 Journal, Habits
 - ✅ Checklists, Tasks
 
-All in plain `.md` files, locally. LLM-friendly.  
-Chat bot for files access from anywhere.  
+All in plain `.md` files, local-first. LLM-friendly.  
+Chatbot for access from anywhere.  
 
-Try it out: [app.files.md](https://app.files.md).  
+Try it out: [app.files.md](https://app.files.md).
+
+## Taking notes is extremely simple
+Just drop your note into the chat-like input and press `Enter`.
+
+<div align="center">
+    <img src="https://github.com/zakirullin/files.md/raw/main/web/img/note1.png" alt="Taking notes" title="Taking notes" width="350"/>
+</div>
+
+That's it. Nothing to learn or setup.  
+Later you can hover a note to move it to any folder.  
 
 ## Another note-taking app?
 Maybe. But this time: 
@@ -29,16 +39,6 @@ Maybe. But this time:
 - The server is just one binary (or use iCloud/Dropbox/Google Drive for sync)
 - Telegram bot for on-the-go access to your files
 
-## Taking notes is extremely simple
-Just drop your note into the chat-like input and press `Enter`.
-
-<div align="center">
-    <img src="https://github.com/zakirullin/files.md/raw/main/web/img/note1.png" alt="Taking notes" title="Taking notes" width="350"/>
-</div>
-
-That's it. Nothing to learn or setup.  
-Later you can hover a note to move it to any folder.  
-
 ## Web Application
 - Open [app.files.md](https://app.files.md) in Chrome browser
 - Click "Install files.md" on the right side of the address bar:
@@ -47,9 +47,7 @@ Later you can hover a note to move it to any folder.
 </div>  
 
 - Open a local folder to persist changes  
-- That's it  
-
-Occasionally hit force-refresh (`Cmd`+`Shift`+`R`) to get new updates.  
+- Occasionally hit force-refresh (`Cmd`+`Shift`+`R`) to get new updates.  
 
 ## Telegram bot 
 1) Open [@FilesMDBot](https://t.me/FilesMDBot)
@@ -229,7 +227,7 @@ You don't have to think about the structure, it is predefined.
 
 - Notes: `brain/Note.md` (`<category>/*.md`, files in subfolders)
 - Projects: `My project.md` (`/*.md`, files in the root directory) - projects, important notes
-- Checklists: `Read.md`, `Watch.md`, `Shop.md` - built-in checklists
+- Checklists: `Read.md`, `Watch.md`, `Shop.md`, `MyChecklist_.md`
 - Journal: `journal/2024.08 August.md` (`journal/<YYYY>.<MM> <Month>.md`)
 - Today: `Today.md` - incoming messages, today's tasks, append-only chat log
 - Tasks: `Later.md` - checklist-based task lists
