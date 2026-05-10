@@ -2,16 +2,6 @@
 // Temporary FS includes welcome files, so to demonstrate the app.
 // First we try to create OPFS storage, fallback to our own in-memory FS on failure.
 
-// Returns true only when the browser exposes every FileSystemFileHandle
-// method the app relies on. Used by both the temporary-storage path and
-// app.js's getRootDirHandle to decide between OPFS and the in-memory FS.
-function opfsIsFullyUsable() {
-    if (typeof FileSystemFileHandle === 'undefined') return false;
-    const proto = FileSystemFileHandle.prototype;
-    return typeof proto.createWritable === 'function'
-        && typeof proto.remove === 'function';
-}
-
 async function getTemporaryStorageDirHandle() {
     // Safari ships OPFS but its FileSystemFileHandle exposes only
     // createSyncAccessHandle (worker-only). Older Chromium has no
@@ -55,6 +45,16 @@ async function getTemporaryStorageDirHandle() {
         isMemFS = true;
         return getMemFSRoot();
     }
+}
+
+// Returns true only when the browser exposes every FileSystemFileHandle
+// method the app relies on. Used by both the temporary-storage path and
+// app.js's getRootDirHandle to decide between OPFS and the in-memory FS.
+function opfsIsFullyUsable() {
+    if (typeof FileSystemFileHandle === 'undefined') return false;
+    const proto = FileSystemFileHandle.prototype;
+    return typeof proto.createWritable === 'function'
+        && typeof proto.remove === 'function';
 }
 
 let memFSRoot = null;

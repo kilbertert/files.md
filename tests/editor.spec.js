@@ -1,9 +1,16 @@
 const {test, expect} = require('@playwright/test');
 
 test.beforeEach(async ({page}) => {
-    await page.goto('/index.html');
+    // Playwright doesn't isolate OPFS per parallel tests, it seems.
+    await page.goto('/robots.txt');
+    await page.evaluate(async () => {
+        const root = await navigator.storage.getDirectory();
+        for await (const entry of root.values()) {
+            try { await root.removeEntry(entry.name, { recursive: true }); } catch (_) {}
+        }
+    });
 
-    // await page.waitForSelector('.CodeMirror', {timeout: 10000});
+    await page.goto('/index.html');
     await page.waitForSelector('#tree', {timeout: 5000});
 });
 
@@ -15,6 +22,8 @@ test('should load the Files.md editor', async ({page}) => {
 });
 
 test('should open markdown file via quick panel and see bold text formatting', async ({page}) => {
+    await page.waitForTimeout(500);
+
     const isMac = process.platform === 'darwin';
     const modifier = isMac ? 'Meta' : 'Control';
     await page.keyboard.press(`${modifier}+k`);
