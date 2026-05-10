@@ -88,7 +88,7 @@ func setAuthCookie(w http.ResponseWriter, token string) {
 	})
 }
 
-func IssueToken(w http.ResponseWriter, r *http.Request) {
+func IssuePermanentToken(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("PANIC in IssueToken: %v", r)
