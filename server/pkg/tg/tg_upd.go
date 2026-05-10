@@ -10,8 +10,6 @@ import (
 	"unicode/utf16"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-
-	"github.com/zakirullin/files.md/server/pkg/txt"
 )
 
 var (
@@ -96,12 +94,15 @@ func (u *TGUpd) Cmd() *Cmd {
 	for _, entity := range u.raw.Message.Entities {
 		if entity.IsCommand() {
 			slashedCommand := getTextByOffset(u.raw.Message.Text, entity.Offset, entity.Length)
+
+			// Only return the command if the message is nothing else but the
+			// command itself.
+			rest := strings.TrimSpace(strings.Replace(u.raw.Message.Text, slashedCommand, "", 1))
+			if rest != "" {
+				return nil
+			}
+
 			cmd := NewCmd(strings.TrimPrefix(slashedCommand, "/"), nil)
-
-			text := strings.Replace(u.raw.Message.Text, slashedCommand, "", 1)
-			text = txt.Ucfirst(strings.TrimSpace(text))
-			cmd.Params = []string{text}
-
 			return &cmd
 		}
 	}

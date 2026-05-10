@@ -23,7 +23,47 @@ func TestCmdNil(t *testing.T) {
 	r.Nil(cmd)
 }
 
-func TestCmdInTheBeginning(t *testing.T) {
+func TestCmdAlone(t *testing.T) {
+	r := require.New(t)
+
+	m := tgbotapi.Message{}
+	m.Text = "/j"
+	m.Entities = []tgbotapi.MessageEntity{{
+		Type:   "bot_command",
+		Offset: 0,
+		Length: 2,
+	}}
+	rawUpdate := tgbotapi.Update{Message: &m}
+
+	cmd := NewTGUpd(rawUpdate).Cmd()
+
+	r.NotNil(cmd)
+	r.Equal("j", cmd.Name)
+}
+
+// "/j " (trailing whitespace only) should still execute - the surrounding
+// space is not real content, just typing slack.
+func TestCmdAloneWithTrailingWhitespace(t *testing.T) {
+	r := require.New(t)
+
+	m := tgbotapi.Message{}
+	m.Text = "/j   "
+	m.Entities = []tgbotapi.MessageEntity{{
+		Type:   "bot_command",
+		Offset: 0,
+		Length: 2,
+	}}
+	rawUpdate := tgbotapi.Update{Message: &m}
+
+	cmd := NewTGUpd(rawUpdate).Cmd()
+
+	r.NotNil(cmd)
+	r.Equal("j", cmd.Name)
+}
+
+// Slash-command with text after it must NOT execute - the user typed a
+// note that happens to begin with a slash, not a command invocation.
+func TestCmdAtBeginningWithText(t *testing.T) {
 	r := require.New(t)
 
 	m := tgbotapi.Message{}
@@ -33,20 +73,15 @@ func TestCmdInTheBeginning(t *testing.T) {
 		Offset: 0,
 		Length: 2,
 	}}
-	rawUpdate := tgbotapi.Update{
-		UpdateID: 0,
-		Message:  &m,
-	}
+	rawUpdate := tgbotapi.Update{Message: &m}
 
-	u := NewTGUpd(rawUpdate)
-	cmd := u.Cmd()
+	cmd := NewTGUpd(rawUpdate).Cmd()
 
-	r.NotNil(cmd)
-	r.Equal("j", cmd.Name)
-	r.Equal("New journal record", cmd.Params[0])
+	r.Nil(cmd)
 }
 
-func TestCmdAtTheEnd(t *testing.T) {
+// Slash-command appearing after text must NOT execute either.
+func TestCmdAtEndWithText(t *testing.T) {
 	r := require.New(t)
 
 	m := tgbotapi.Message{}
@@ -56,17 +91,30 @@ func TestCmdAtTheEnd(t *testing.T) {
 		Offset: 19,
 		Length: 2,
 	}}
-	rawUpdate := tgbotapi.Update{
-		UpdateID: 0,
-		Message:  &m,
-	}
+	rawUpdate := tgbotapi.Update{Message: &m}
 
-	u := NewTGUpd(rawUpdate)
-	cmd := u.Cmd()
+	cmd := NewTGUpd(rawUpdate).Cmd()
 
-	r.NotNil(cmd)
-	r.Equal("j", cmd.Name)
-	r.Equal("New journal record", cmd.Params[0])
+	r.Nil(cmd)
+}
+
+// The bug: a slash-command in the middle of a sentence used to be treated
+// as a command invocation. Must fall through to the text-saving path now.
+func TestCmdInTheMiddle(t *testing.T) {
+	r := require.New(t)
+
+	m := tgbotapi.Message{}
+	m.Text = "Hey check out /habits today"
+	m.Entities = []tgbotapi.MessageEntity{{
+		Type:   "bot_command",
+		Offset: 14,
+		Length: 7,
+	}}
+	rawUpdate := tgbotapi.Update{Message: &m}
+
+	cmd := NewTGUpd(rawUpdate).Cmd()
+
+	r.Nil(cmd)
 }
 
 func TestUserID(t *testing.T) {
