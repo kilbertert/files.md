@@ -764,7 +764,7 @@ function TreeView(root, container, options) {
                     if (typeof window.handleDroppedFile === 'function') {
                         window.handleDroppedFile(fileName, content);
                     } else {
-                        console.log('Dropped file:', fileName, content);
+                        log('Dropped file:', fileName, content);
                     }
                 };
                 reader.readAsText(file);
@@ -941,8 +941,8 @@ function TreeView(root, container, options) {
 
             if (typeof window.handleNodeMove === 'function') {
                 const sourceDir = draggedNode.parent ? draggedNode.parent.toString() : '';
-                console.log(draggedNode.parent);
-                console.log(sourceDir);
+                log(draggedNode.parent);
+                log(sourceDir);
 
                 const sourceFile = draggedNode.toString() + '.md';
                 let targetDir;
@@ -1205,9 +1205,9 @@ function isChecklist(filename) {
 }
 
 window.handleNodeMove = async function (sourceDir, sourceFile, targetDir) {
-    console.log(`Moving ${sourceDir}/${sourceFile} to ${targetDir}/`);
+    log(`Moving ${sourceDir}/${sourceFile} to ${targetDir}/`);
 
-    console.log(`${sourceDir}/${sourceFile}`);
+    log(`${sourceDir}/${sourceFile}`);
     if (currentEditor.path === `${sourceDir}/${sourceFile}`) {
         await moveCurrentFile(targetDir);
     } else {
@@ -1217,7 +1217,7 @@ window.handleNodeMove = async function (sourceDir, sourceFile, targetDir) {
 
 // WHEN?
 window.handleDroppedFile = async function (fileName, content) {
-    console.log(`Creating new file: ${fileName}`, content);
+    log(`Creating new file: ${fileName}`, content);
 
     if (typeof createFileFromContent === 'function') {
         await createFileFromContent(fileName + '.md', content);

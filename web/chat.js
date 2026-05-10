@@ -701,7 +701,6 @@ function attachEventListeners() {
                     const path = joinPath('/', btn.dataset.dir, sanitizeFilename(header)) + '.md';
                     destinations.push(path);
                     for (const msg of msgs) {
-                        console.log(path, body);
                         await moveFromInbox(msg, async () => {
                             await write(path, body)
                         });

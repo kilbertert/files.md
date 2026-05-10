@@ -72,7 +72,7 @@ self.addEventListener('install', event => {
             try {
                 await cache.add(url);
             } catch (err) {
-                log.error('✗ Failed to cache:', url, err);
+                console.error('✗ Failed to cache:', url, err);
             }
         }
 

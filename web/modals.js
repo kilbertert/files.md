@@ -704,7 +704,6 @@ class MoveModal {
                 const [header, body] = extractHeaderAndBody(msg, MAX_TITLE_LENGTH);
                 const path = joinPath('/', toDir, sanitizeFilename(header)) + '.md';
                 for (const msg of msgs) {
-                    console.log(path, body);
                     await moveFromInbox(msg, async () => {
                         await write(path, body)
                     });

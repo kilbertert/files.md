@@ -250,13 +250,6 @@ function isMetaKey(event) {
 }
 
 async function openDir() {
-    await navigator.storage.persist();
-    // // Request persistent storage for site
-    // if (navigator.storage && navigator.storage.persist) {
-    //     const isPersisted = await navigator.storage.persist();
-    //     console.log(`Persisted storage granted: ${isPersisted}`);
-    // }
-    //
     let dirHandle = null;
     try {
         dirHandle = await window.showDirectoryPicker({ 'mode': 'readwrite' });
