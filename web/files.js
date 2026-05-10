@@ -791,11 +791,7 @@ async function moveCurrentFile(toDir) {
             path: newPath,
             handle: await getFileHandle(newPath),
         });
-        // files[toDir][editor.currentFile] = {
-        //     content: content,
-        //     lastModified: 0,
-        //     handle: await getFileHandle(newPath),
-        // }
+
         currentEditor.path = newPath;
         setServerFile(newPath, content, 0);
         saveServerFiles();
@@ -857,8 +853,11 @@ async function moveFile(oldPath, newPath) {
             path: newPath,
             handle: await getFileHandle(newPath),
         });
-        setServerFile(newPath, content, 0);
-        saveServerFiles();
+        // Don't preemptively setServerFile here - that would stamp the
+        // server snapshot with hash(content), which makes getFileStatus
+        // return 'notModified' on the next sync and the server never
+        // receives newPath. Leaving serverFile null lets the sync see
+        // it as 'new' and push it normally.
 
         // Server file will be removed here.
         await remove(oldPath);
@@ -1425,15 +1424,19 @@ function walk(obj, callback, path = '/') {
             }
         }
 
-        // Add directories to stack (in reverse order to maintain order)
+        // Fire dir callbacks in forward order so consumers see ABC, not CBA.
+        for (const key of dirs) {
+            const fullPath = currentPath + key;
+            if (callback(fullPath, false) === false) {
+                return;
+            }
+        }
+
+        // Push to stack in reverse so DFS pops them in forward order.
         for (let i = dirs.length - 1; i >= 0; i--) {
             const key = dirs[i];
             const item = currentObj[key];
             const fullPath = currentPath + key;
-
-            if (callback(fullPath, false) === false) {
-                return;
-            }
             stack.push({obj: item, path: fullPath});
         }
     }
