@@ -16,7 +16,7 @@ const LOG_PATH = '/archive/Log.txt';
 const OPEN_INBOX_AFTER_IDLE = 60 * 60 * 1000; // ms
 
 let openInboxIdleTimer = null;
-let isInbox = false;
+let isChat = false;
 let isMemFS = false;
 let debug = false;
 // let debug = {dir: '', file: 'File.md', loaded: false};
@@ -458,7 +458,7 @@ function toggleSidebar() {
     } else {
         sidebar.style.display = 'none';
         openSidebar.style.display = 'block';
-        if (isInbox) {
+        if (isChat) {
             chatInput.focus();
         } else {
             currentEditor.focus();
@@ -737,7 +737,7 @@ document.addEventListener('keydown', (event) => {
         const allMessages = chat.querySelectorAll('.message');
         allMessages.forEach(message => message.classList.remove('selected'));
         // If in chat, focus chat input
-        if (isInbox) {
+        if (isChat) {
             chatInput.focus();
         }
     }
@@ -748,7 +748,7 @@ document.addEventListener('keydown', function(event) {
     // Cmd+shift+enter toglle inbox modal
     if (event.shiftKey && isMetaKey(event) && event.key === 'Enter') {
         event.preventDefault();
-        if (isInbox) {
+        if (isChat) {
             history.back();
         } else {
             event.preventDefault();
@@ -798,8 +798,8 @@ window.addEventListener('focus', async () => {
 
     // We don't want to do heavy stuff when chat is open.
     const userHasCustomAPIUrl = localStorage.getItem('apiUrl') !== null;
-    if (isInbox || (isMemFS && !userHasCustomAPIUrl)) {
-        if (isInbox) {
+    if (isChat || (isMemFS && !userHasCustomAPIUrl)) {
+        if (isChat) {
             document.getElementById('inbox-input').focus();
         }
         return false;
@@ -866,7 +866,7 @@ document.addEventListener('keydown', (e) => {
         return;
     }
 
-    if (isInbox) {
+    if (isChat) {
         return;
     }
 }, true);

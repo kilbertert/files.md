@@ -76,7 +76,7 @@ async function openChat() {
     if (searchModal.style.display === 'none') {
         chatInput.focus();
     }
-    isInbox = true;
+    isChat = true;
     await renderMessages();
     scrollToBottom();
 }
@@ -96,7 +96,7 @@ async function openChatModal() {
 
 function closeChatModal() {
     chatContainer.classList.remove('modal');
-    if (!isInbox) {
+    if (!isChat) {
         chatContainer.style.display = 'none';
         chat.style.display = 'none';
         chatInput.style.display = 'none';
@@ -104,7 +104,7 @@ function closeChatModal() {
 }
 
 async function toggleChatModal() {
-    if (isInbox) {
+    if (isChat) {
         return;
     }
 
@@ -406,7 +406,7 @@ async function addToJournal(text) {
     await addHeaderAndText(journalPath, todayHeader(), text);
 }
 
-async function moveFromInbox(text, callback) {
+async function moveFromChat(text, callback) {
     await callback(text);
 
     const { messages } = await parseMessagesFromChat();
@@ -624,9 +624,16 @@ function attachEventListeners() {
 
             (async () => {
                 for (const msg of msgs) {
-                    await moveFromInbox(msg, addToJournal);
+                    await moveFromChat(msg, addToJournal);
                 }
                 await renderMessages();
+                // The journal file (or even the journal/ dir) may have
+                // just been created on disk. addToJournal goes through
+                // write(), which doesn't touch the in-memory `files` map,
+                // so reload from disk before rendering or the new entry
+                // won't show up in the sidebar.
+                files = await loadLocalFiles(await getRootDirHandle());
+                renderSidebar('', [`/journal/${todayJournalFilename()}`]);
             })();
 
             // TODO only remove if previous is successful
@@ -637,7 +644,6 @@ function attachEventListeners() {
                 }, 300);
             });
             chatInput.focus();
-            renderSidebar('', [`/journal/${todayJournalFilename()}`]);
         });
     });
 
@@ -658,10 +664,19 @@ function attachEventListeners() {
 
             (async () => {
                 for (const msg of msgs) {
-                    await moveFromInbox(msg, async msg => {
+                    await moveFromChat(msg, async msg => {
                         await addChecklistItem(btn.dataset.checklist, msg)
                     });
                 }
+                // The checklist file (Later.md / Read.md / Watch.md /
+                // Shop.md) may not exist yet - addChecklistItem creates it
+                // on disk via write() but doesn't touch the in-memory
+                // `files` map, so reload before rendering.
+                files = await loadLocalFiles(await getRootDirHandle());
+                // dataset.checklist is "Later.md"/"Read.md"/etc.; sidebar
+                // paths are absolute, so prepend / so the includes() match
+                // fires.
+                renderSidebar('', [joinPath('/', btn.dataset.checklist)]);
             })();
 
             messagesToRemove.forEach(message => {
@@ -674,9 +689,6 @@ function attachEventListeners() {
                 renderMessages();
             }, 500);
             chatInput.focus();
-            // dataset.checklist is "Later.md"/"Read.md"/etc.; sidebar paths
-            // are absolute, so prepend / for the includes() match to fire.
-            renderSidebar('', [joinPath('/', btn.dataset.checklist)]);
         });
     });
 
@@ -701,12 +713,16 @@ function attachEventListeners() {
                     const path = joinPath('/', btn.dataset.dir, sanitizeFilename(header)) + '.md';
                     destinations.push(path);
                     for (const msg of msgs) {
-                        await moveFromInbox(msg, async () => {
+                        await moveFromChat(msg, async () => {
                             await write(path, body)
                         });
                     }
                 }
                 await renderMessages();
+                // Reload from disk - write() above creates new files (and
+                // possibly the archive/ dir itself) without touching the
+                // in-memory `files` map.
+                files = await loadLocalFiles(await getRootDirHandle());
                 renderSidebar('', destinations);
             })();
 
@@ -738,9 +754,16 @@ function attachEventListeners() {
             let callback = async text => await addHeaderAndText(path, todayHeader(), text, true, false);
             (async () => {
                 for (const msg of msgs) {
-                    await moveFromInbox(msg, callback);
+                    await moveFromChat(msg, callback);
                 }
                 await renderMessages();
+                // The recent-file may not exist yet (addHeaderAndText goes
+                // through write() and doesn't touch the in-memory `files`
+                // map), so reload before rendering. dataset.filename is
+                // just "Foo.md"; the sidebar walker produces "/Foo.md" -
+                // normalize so modifiedPaths.includes(path) matches.
+                files = await loadLocalFiles(await getRootDirHandle());
+                renderSidebar('', [joinPath('/', path)]);
             })();
 
             messagesToRemove.forEach(message => {
@@ -751,9 +774,6 @@ function attachEventListeners() {
             });
 
             chatInput.focus();
-            // dataset.filename is just "Foo.md"; the sidebar walker produces
-            // "/Foo.md" - normalize so modifiedPaths.includes(path) matches.
-            renderSidebar('', [joinPath('/', path)]);
         });
     });
 

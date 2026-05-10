@@ -30,7 +30,7 @@ class SearchModal {
                 this.close();
                 event.preventDefault();
                 event.stopPropagation();
-                if (isInbox) {
+                if (isChat) {
                     chatInput.focus();
                 } else {
                     currentEditor.focus();
@@ -352,7 +352,7 @@ class SearchModal {
             const [header, body] = extractHeaderAndBody(msg, MAX_TITLE_LENGTH);
             const path = joinPath('/', toDir, sanitizeFilename(header)) + '.md';
             destinations.push(path);
-            await moveFromInbox(msg, async () => {
+            await moveFromChat(msg, async () => {
                 await write(path, body);
                 addMemFile(path, {
                     isFile: true,
@@ -396,7 +396,7 @@ class SearchModal {
 
             let callback = async text => await addHeaderAndText(path, todayHeader(), text, true, false);
             for (const msg of msgs) {
-                await moveFromInbox(msg, callback);
+                await moveFromChat(msg, callback);
                 await renderMessages();
             }
 
@@ -512,7 +512,7 @@ class MoveModal {
                 this.close();
                 event.preventDefault();
                 event.stopPropagation();
-                if (isInbox) {
+                if (isChat) {
                     chatInput.focus();
                 } else {
                     currentEditor.focus();
@@ -704,7 +704,7 @@ class MoveModal {
                 const [header, body] = extractHeaderAndBody(msg, MAX_TITLE_LENGTH);
                 const path = joinPath('/', toDir, sanitizeFilename(header)) + '.md';
                 for (const msg of msgs) {
-                    await moveFromInbox(msg, async () => {
+                    await moveFromChat(msg, async () => {
                         await write(path, body)
                     });
                     await renderMessages();

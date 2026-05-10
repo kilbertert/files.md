@@ -992,7 +992,7 @@ async function openFile(path, saveToHistory = true, el = 'editor-textarea') {
             codemirror.style.display = 'block';
             chat.style.display = 'none';
             chatInput.style.display = 'none';
-            isInbox = false;
+            isChat = false;
         }
         // chatButton.classList.remove('hidden');
         chatContainer.style.display = 'none';
