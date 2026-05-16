@@ -122,13 +122,10 @@
 
 .cm-s-hypermd-light pre.HyperMD-header.HyperMD-header-1 {
     padding-top: 18px !important;
-    /* The horizontal rule is drawn as a 1.5px slice inside a
-       linear-gradient background, leaving ~14px above and ~14px below
-       it inside the same pre. We DON'T push the lower gap to the next
-       pre - that breaks wrapped-line cursor placement, because
-       CodeMirror computes per-visual-row cursor offsets from
-       `defaultTextHeight` and doesn't know about extra padding-top on
-       a wrapped pre. */
+    /* ~14px breathing room on each side of the HR, drawn as a 1.5px
+       slice inside a linear-gradient. Selection of the H1 will extend
+       ~14px past the rule but that's the cost of keeping cursor math
+       intact (no margins, no padding-top on the next pre). */
     padding-bottom: 32px !important;
     background-image: linear-gradient(
         to bottom,
@@ -227,27 +224,24 @@
     transition: background .15s, color .15s;
 }
 
-/* Active line (cursor on the line): lime-green chip + blue text,
-   no underline. CodeMirror tags the active line's pre with
-   `.CodeMirror-activeline`. Slight horizontal padding so the chip
-   extends just past the text edges instead of clipping exactly to
-   the glyphs. */
+/* Active line (cursor on the line): lime-green chip + blue text.
+   No padding because adding any horizontal padding makes the text
+   jump as the cursor moves between lines. */
 .cm-s-hypermd-light pre.CodeMirror-activeline span.cm-link,
 .cm-s-hypermd-light pre.CodeMirror-activeline span.cm-string.cm-url.cm-hmd-barelink {
     background: var(--color-neo-lime) !important;
     color: var(--color-neo-blue) !important;
     border-bottom: none !important;
-    padding: 0.05em 0.2em !important;
 }
 
-/* Hover: orange chip + dark text, matching the sidebar's selected-row
-   highlight so the "clickable" affordance is consistent across the UI. */
+/* Hover: keep the default blue text and add a thick orange underline.
+   No background swap and no padding so the line doesn't shift under
+   the cursor as the user mouses over links. */
 .cm-s-hypermd-light span.cm-link:hover,
 .cm-s-hypermd-light span.cm-string.cm-url.cm-hmd-barelink:hover {
-    background: var(--color-neo-orange) !important;
-    color: #1A1A1A !important;
-    border-bottom: none !important;
-    padding: 0.05em 0.2em !important;
+    background: transparent !important;
+    color: var(--color-neo-blue) !important;
+    border-bottom: 3px solid var(--color-neo-orange) !important;
 }
 
 /* Blockquote: soft light-blue gradient strip with a thick neo-blue left
