@@ -106,7 +106,7 @@ async function setup(page) {
         init(document.getElementById('editor'));
     });
 
-    await page.waitForSelector('#inbox', {timeout: 10000});
+    await page.waitForSelector('#chat', {timeout: 10000});
     await page.waitForSelector('#tree', {timeout: 5000});
 }
 

@@ -8,7 +8,7 @@ test.beforeEach(async ({page}) => {
 
 test('send message to chat', async ({ page }) => {
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('My message');
     await page.waitForTimeout(300);
     // TODO I believe chat is reloaded 2 times for some reason, it blinks, and thus removes previous message
@@ -23,7 +23,7 @@ test('send message to chat', async ({ page }) => {
 
 test('select all in chat input selects input text, not bubbles', async ({page}) => {
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('First message');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -52,7 +52,7 @@ test('move to dir creates a new file inside that dir', async ({page}) => {
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('MyTask');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -83,7 +83,7 @@ test('move to root creates a new file at root', async ({page}) => {
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('RootMsg');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -118,7 +118,7 @@ test('move to existing file appends content', async ({page}) => {
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('Append me');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -150,7 +150,7 @@ test('move to file does not prepend a timestamp', async ({page}) => {
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('Attention is all you need');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -183,7 +183,7 @@ test('move to recent file does not prepend a timestamp', async ({page}) => {
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('Attention is all you need');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -213,7 +213,7 @@ test('system dirs (archive, today) are hidden in move-to-file modal', async ({pa
     await page.evaluate(() => init(document.getElementById('editor')));
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('Hello');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
@@ -243,7 +243,7 @@ test('send to chat and move to recent file', async ({ page }) => {
     });
 
     await page.click(`#tree .tree-item:has-text('chat')`);
-    await page.waitForSelector('#inbox');
+    await page.waitForSelector('#chat');
     await page.keyboard.type('My message');
     await page.waitForTimeout(300);
     await page.keyboard.press('Enter');
