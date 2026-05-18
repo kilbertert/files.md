@@ -20,7 +20,7 @@ Try it out: [app.files.md](https://app.files.md) (Beta). Main site: [files.md](h
 > You grow software around it with an LLM.  
 > Both can last through the ages.   
 
-**My friends and I have been building this project for 5 years**. **[Sponsor it on GitHub 💚](https://github.com/sponsors/zakirullin)**.
+**I have been building this project for 5 years**. **[Sponsor it on GitHub 💚](https://github.com/sponsors/zakirullin)**.
 
 ## Another note taking app? 
 Maybe. But this time:
