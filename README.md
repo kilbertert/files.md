@@ -61,8 +61,6 @@ You can use chat to quickly dump your thoughts.
 
 <img src="https://github.com/zakirullin/files.md/raw/main/web/img/app.png" alt="Files.md screenshot" title="Files.md"/>
 
-It will be synchronized across all devices.  
-
 Open the chat and send a message:
 <div align="center">
     <img src="https://github.com/zakirullin/files.md/raw/main/web/img/note1.png"  width="350"/>
