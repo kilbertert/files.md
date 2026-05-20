@@ -2,15 +2,19 @@
 
 ## Deploy on your own server
 
-Prepare server (tested on Debian-based systems):
+Install [Go](https://go.dev/doc/install) on your host machine.  
+
+Initialize server with folders and systemd service. Tested on Debian-based systems:
 ```bash
-$ make init_server host=<YOUR_SSH_HOST> salt=<YOUR_SECRET_SALT>
+$ make init_server host=user@example.com salt=$(head -c 32 /dev/urandom | base64)
 ```
 
 Deploy a systemd service:
 ```bash
 $ make deploy_systemd host=<YOUR_SSH_HOST>
 ```
+
+That's all :)  
 
 ## Run your own Telegram Bot
 1) Install [Go](https://go.dev/doc/install)
