@@ -17,7 +17,7 @@ All in plain `.md` files, local-first. LLM-friendly. **Private - no data is sent
 > Own the software that opens those files.  
 > Grow your knowledge with files and your own brain.  
 > Grow the software around it with an LLM.  
-> **Plain files and owned software can last through the ages**.  
+> **Plain files and self-owned software can last through the ages**.  
  
 Try it out: [app.files.md](https://app.files.md) (Beta). Main site: [files.md](https://files.md).
 
