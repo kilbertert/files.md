@@ -53,7 +53,7 @@ Maybe. But this time:
 ## Dump your thoughts
 You can use chat to quickly dump your thoughts.  
 
-<img src="https://github.com/zakirullin/files.md/raw/main/web/img/app.png" alt="Files.md screenshot" title="Files.md"/>
+<img src="https://github.com/zakirullin/files.md/raw/main/web/img/app.png" alt="Files.md screenshot" title="Files.md" width="600"/>
 
 Open the chat and send a message:
 <div align="center">
@@ -181,14 +181,12 @@ Drop a message and stay in flow.
     <img src="https://github.com/zakirullin/files.md/raw/main/web/img/task.png" title="Adding a task" width="350"/>
 </div>
 
-Add only small, actionable items.  
-Not things like "Plan a vacation".  
-Add the first tiny step of what should be done anyway.     
+Add only small, actionable items. Not things like "Plan a vacation".  
+Your task should be the first, small step of what should be done anyway.  
 **Not what you wish to be done, but don't have motivation just yet.**   
 Your task list should not create a feeling of guilt.  
 
 For tasks that should be done later press "To Later".  
-
 
 ## Checklists 🛒
 A friend recommends a book to you.  
