@@ -702,8 +702,15 @@ pre.HyperMD-codeblock-end {
         margin-left: 17%;
     }
 
-    #sidebar {
-        width: 140px !important;
+    /* Collapse the sidebar by default on phones. toggleSidebar() flips
+       `body.sidebar-open` on tap, which suppresses these rules so the
+       sidebar can slide back in. */
+    body:not(.sidebar-open) #sidebar {
+        display: none !important;
+    }
+
+    body:not(.sidebar-open) #open-sidebar {
+        display: block !important;
     }
 }
 

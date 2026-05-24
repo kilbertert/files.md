@@ -1672,12 +1672,13 @@ func (b *Bot) showChecklist(params []string) error {
 	}
 
 	items := txt.IncompleteChecklistItems(md)
-	// TODO check that we're showing last buttons
 	maxButtons := maxBtns
 	if checklist == fs.ReadFilename || checklist == fs.WatchFilename {
 		maxButtons = maxBtnsInChecklist
 	}
-	items = items[max(0, len(items)-maxButtons):]
+	if len(items) > maxButtons {
+		items = items[:maxButtons]
+	}
 
 	kb := tg.NewKeyboard(nil)
 	for _, item := range items {

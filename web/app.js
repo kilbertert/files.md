@@ -453,12 +453,18 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const openSidebar = document.getElementById('open-sidebar');
 
-    if (sidebar.style.display === 'none') {
+    const isHidden = sidebar.style.display === 'none'
+        || getComputedStyle(sidebar).display === 'none';
+
+    if (isHidden) {
         sidebar.style.display = 'flex';
         openSidebar.style.display = 'none';
+        // Suppresses the mobile media-query that hides the sidebar.
+        document.body.classList.add('sidebar-open');
     } else {
         sidebar.style.display = 'none';
         openSidebar.style.display = 'block';
+        document.body.classList.remove('sidebar-open');
         if (isChat) {
             chatInput.focus();
         } else {
