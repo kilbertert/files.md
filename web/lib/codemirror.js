@@ -3173,14 +3173,15 @@
     return result
   }
 
-  // Currently it's either table or img
+  // PATCHED, currently it's either table or img/audio/video
   function hasWidgetAtCursor(cm, head) {
     let lineView = findViewForLine(cm, head.line);
     if (!lineView || !lineView.text) return false;
 
     let tables = lineView.text.querySelectorAll('.hmd-table-column');
-    let images = lineView.text.querySelectorAll('.CodeMirror-widget img');
-    return tables.length > 0 || images.length > 0;
+    // PATCHED, was just img - audio/video need the same tall-cursor treatment
+    let media = lineView.text.querySelectorAll('.CodeMirror-widget img, .CodeMirror-widget audio, .CodeMirror-widget video');
+    return tables.length > 0 || media.length > 0;
   }
 
   // Draws a cursor for the given range
