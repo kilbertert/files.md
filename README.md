@@ -38,6 +38,7 @@ Maybe. But this time:
 - Works offline
 - **Local-first, files don't leave your device**
 - Extremely simple code. **One person or an LLM can fit the whole project in head**
+- In other words, this project has [low cognitive load](https://github.com/zakirullin/cognitive-load)
 - The codebase is ready for your LLM to extend to your needs
 - Portable, no build systems, no Electron, just open `web/index.html` 
 - Optional out of the box synchronization 
