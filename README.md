@@ -16,9 +16,9 @@ You can store your whole life:
 
 All in plain `.md` files, local-first. LLM-friendly. **Private - your data stays at your device**.  
 
-You can use this app for Zettelkasten, Second Brain, Notes, Journaling, To Do lists, Checklists, and more.  
-
 Try it out: [app.files.md](https://app.files.md) (Beta). Main site: [files.md](https://files.md).  
+
+You can use this app for Zettelkasten, Second Brain, Notes, Journaling, To Do lists, Checklists, and more.
 
 > Own your data as plain local files.  
 > Own the software that opens those files.   
