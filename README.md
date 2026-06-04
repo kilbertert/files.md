@@ -8,15 +8,15 @@ Private, quiet space for thinking. Simple app for `.md` files.
     English · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
-An app for Zettelkasten, Second Brain, Notes, Journaling, To Do lists, Checklists, and more.  
-
 You can store your whole life:
 - 📌 Notes
 - 📝 Documents, Projects
 - 💚 Journal, Habits
 - ✅ Checklists, Tasks
 
-All in plain `.md` files, local-first. LLM-friendly. **Private - your data stays at your device**.    
+All in plain `.md` files, local-first. LLM-friendly. **Private - your data stays at your device**.  
+
+You can use this app for Zettelkasten, Second Brain, Notes, Journaling, To Do lists, Checklists, and more.  
 
 Try it out: [app.files.md](https://app.files.md) (Beta). Main site: [files.md](https://files.md).  
 
