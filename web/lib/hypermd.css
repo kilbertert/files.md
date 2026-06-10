@@ -70,6 +70,23 @@
 .CodeMirror pre.HyperMD-table-row .hmd-table-column-content {
     display: inline-block;
 }
+.CodeMirror pre.HyperMD-table-row > span:has(> .hmd-table-column) {
+    display: flex;
+    align-items: stretch;
+}
+.CodeMirror pre.HyperMD-table-row .hmd-table-column,
+.CodeMirror pre.HyperMD-table-row span.cm-hmd-table-sep {
+    flex: none;
+}
+.CodeMirror pre.HyperMD-table-row .hmd-table-column-content {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+}
+.CodeMirror .hmd-table-measure .hmd-table-column-content {
+    max-width: none !important;
+    white-space: pre !important;
+}
 .CodeMirror pre.HyperMD-table-row .hmd-table-column-left {
     text-align: left;
 }

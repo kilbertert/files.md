@@ -307,6 +307,7 @@ function initEditor(el) {
             return CodeMirror.Pass;
         },
         'Cmd-A': function (cm) {
+            if (tableSelectCell(cm)) return;
             const cursor = cm.getCursor();
 
             // If cursor is on the first line, select all text in that line
@@ -330,6 +331,7 @@ function initEditor(el) {
             );
         },
         'Ctrl-A': function (cm) {
+            if (tableSelectCell(cm)) return;
             const cursor = cm.getCursor();
 
             // If cursor is on the first line, select all text in that line
@@ -471,6 +473,7 @@ function initEditor(el) {
     });
 
     initAutoscroll(newEditor);
+    initTablePlus(newEditor);
 
     return newEditor;
 }

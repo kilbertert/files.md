@@ -2528,6 +2528,12 @@
     for (; i < heights.length - 1; i++)
       { if (mid < heights[i]) { break } }
     var top = i ? heights[i - 1] : 0, bot = heights[i];
+    // PATCHED: see isTableRowLine - the height bands from ensureLineHeights
+    // assume wrapping happens at the editor edge, which doesn't hold for
+    // table rows whose cells wrap independently. Snapping to those bands
+    // produces full-row-height boxes (giant cursor, broken selection and
+    // click mapping), so use the real character rect instead.
+    if (isTableRowLine(prepared.line)) { top = rtop; bot = rbot; }
     var result = {left: (collapse == "right" ? rect.right : rect.left) - prepared.rect.left,
                   right: (collapse == "left" ? rect.left : rect.right) - prepared.rect.left,
                   top: top, bottom: bot};
@@ -2752,6 +2758,37 @@
     return box.bottom <= y ? false : box.top > y ? true : (left ? box.left : box.right) > x
   }
 
+  // PATCHED: table rows render columns as inline-blocks whose cells word-wrap
+  // independently (addon/table), so visual order no longer follows
+  // character order on those lines: a wrapped cell's second visual row comes
+  // before the next cell's first-row characters. The binary searches in
+  // coordsCharInner and wrappedLineExtent assume monotonicity and land on
+  // garbage there, so such lines get an exhaustive scan instead.
+  function isTableRowLine(lineObj) {
+    var cls = lineObj.styleClasses && lineObj.styleClasses.textClass;
+    return !!cls && cls.indexOf("HyperMD-table-row") > -1
+  }
+
+  function coordsCharTableRow(cm, lineObj, lineNo, preparedMeasure, widgetHeight, x, y) {
+    var best = -1, bestBox = null, bestDist = 1e20;
+    for (var i = 0; i < lineObj.text.length; i++) {
+      var box = measureCharPrepared(cm, preparedMeasure, i);
+      var top = box.top + widgetHeight, bottom = box.bottom + widgetHeight;
+      var dy = y < top ? top - y : y >= bottom ? y - bottom + 1 : 0;
+      var dx = x < box.left ? box.left - x : x > box.right ? x - box.right : 0;
+      // Vertical distance weighs more so clicks prefer the nearest visual
+      // row, but not so much that clicking the empty area below a short
+      // cell jumps into a wrapped neighbour cell's lower row.
+      var dist = dy * 4 + dx;
+      if (dist < bestDist) { bestDist = dist; best = i; bestBox = box; }
+    }
+    var atLeft = x - bestBox.left < bestBox.right - x;
+    var ch = skipExtendingChars(lineObj.text, best + (atLeft ? 0 : 1), 1);
+    var baseX = atLeft ? bestBox.left : bestBox.right;
+    var outside = y < bestBox.top + widgetHeight ? -1 : y >= bestBox.bottom + widgetHeight ? 1 : 0;
+    return PosWithInfo(lineNo, ch, atLeft ? "after" : "before", outside, x - baseX)
+  }
+
   function coordsCharInner(cm, lineObj, lineNo, x, y) {
     // Move y into line-local coordinate space
     y -= heightAtLine(lineObj);
@@ -2760,6 +2797,11 @@
     // for the widgets at this line.
     var widgetHeight = widgetTopHeight(lineObj);
     var begin = 0, end = lineObj.text.length, ltr = true;
+
+    // PATCHED: see isTableRowLine
+    if (lineObj.text.length > 0 && isTableRowLine(lineObj)) {
+      return coordsCharTableRow(cm, lineObj, lineNo, preparedMeasure, widgetHeight, x, y)
+    }
 
     var order = getOrder(lineObj, cm.doc.direction);
     // If the line isn't plain left-to-right text, first figure out
@@ -3280,8 +3322,10 @@
         endChar: extent.end,
         visualIndex: segments.length
       });
+      // PATCHED: safety check - on non-monotonic lines (see isTableRowLine)
+      // the extent can fail to advance or even go backwards - bail out.
+      if (extent.end <= pos) break;
       pos = extent.end;
-      if (pos === extent.begin) break; // Safety check
     }
 
     return segments;
@@ -3327,10 +3371,46 @@
       fragment.appendChild(elt("div", null, "CodeMirror-selected", ("position: absolute; left: " + left + "px;\n                             top: " + top + "px; width: " + (width == null ? rightSide - left : width) + "px;\n                             height: " + (bottom - top) + "px")));
     }
 
+    // PATCHED: table rows lay their cells out as inline-blocks that word-wrap
+    // independently, so the visual-line math in drawForLine doesn't apply
+    // (getVisualLines/wrapX assume character order follows visual order).
+    // Draw the selection as per-character boxes merged into contiguous runs:
+    // one rectangle per visual row per cell.
+    function drawForTableLine(line, fromArg, toArg) {
+      var lineObj = getLine(doc, line);
+      var lineLen = lineObj.text.length;
+      var from = Math.max(0, fromArg == null ? 0 : fromArg);
+      var to = Math.min(lineLen, toArg == null ? lineLen : toArg);
+      var start, end, run = null;
+      function flush() {
+        if (!run) { return }
+        drawSelectionRect(run.left - 2, run.top, run.right - run.left + 4, run.bottom);
+        run = null;
+      }
+      for (var ch = from; ch < to; ch++) {
+        var box = charCoords(cm, Pos(line, ch), "div", lineObj);
+        if (box.right - box.left <= 0) { continue } // zero-width (hidden separators)
+        if (!start) { start = box; }
+        end = box;
+        if (run && Math.abs(box.top - run.top) < 3 && box.left - run.right < 3) {
+          if (box.right > run.right) { run.right = box.right; }
+          if (box.bottom > run.bottom) { run.bottom = box.bottom; }
+        } else {
+          flush();
+          run = {left: box.left, right: box.right, top: box.top, bottom: box.bottom};
+        }
+      }
+      flush();
+      if (!start) { start = end = charCoords(cm, Pos(line, Math.min(from, lineLen)), "div", lineObj); }
+      return {start: start, end: end}
+    }
+
     function drawForLine(line, fromArg, toArg) {
       var lineObj = getLine(doc, line);
       var lineLen = lineObj.text.length;
       var start, end;
+      // PATCHED: see drawForTableLine
+      if (isTableRowLine(lineObj)) { return drawForTableLine(line, fromArg, toArg) }
       // PATCHED: pull the line's padding-bottom off the rendered pre
       // so we can clamp the selection rect's bottom. Without this the
       // brutal theme's H1 (which uses padding-bottom + a linear-gradient
@@ -3475,6 +3555,11 @@
         // start and end lines are handled already, so we exclude them
         for (let lineNum = startLine + 1; lineNum <= endLine - 1; lineNum++) {
           let line = getLine(doc, lineNum);
+          // PATCHED: see drawForTableLine
+          if (isTableRowLine(line)) {
+            drawForTableLine(lineNum, null, null);
+            continue;
+          }
           let visualLines = getVisualLines(cm, lineNum);
           visualLines.forEach(visualLine => {
             let firstCharPos = charCoords(cm, Pos(lineNum, visualLine.startChar), "div");
