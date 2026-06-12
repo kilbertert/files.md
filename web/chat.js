@@ -951,7 +951,7 @@ async function renderMessages() {
     const recentFilesButtons = recentFiles.map(filename => `
     <div class="btn-wrapper">
        <button class="action-btn to-recent-btn" data-filename="${filename}">
-           ${filename.replace(/\.md$/, '').slice(0, 10)}${filename.replace(/\.md$/, '').length > 10 ? '…' : ''}
+           → ${filename.replace(/\.md$/, '').slice(0, 10)}${filename.replace(/\.md$/, '').length > 10 ? '…' : ''}
        </button>
        <span class="btn-label">To ${filename.replace(/\.md$/, '')}</span>
     </div>
